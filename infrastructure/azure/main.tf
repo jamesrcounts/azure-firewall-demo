@@ -5,14 +5,14 @@ resource "azurerm_virtual_network" "example" {
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-resource "azurerm_subnet" "example" {
+resource "azurerm_subnet" "fw" {
   name                 = "AzureFirewallSubnet"
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.example.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-resource "azurerm_public_ip" "example" {
+resource "azurerm_public_ip" "fw" {
   name                = "testpip"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -20,14 +20,3 @@ resource "azurerm_public_ip" "example" {
   sku                 = "Standard"
 }
 
-resource "azurerm_firewall" "example" {
-  name                = "testfirewall"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                 = "configuration"
-    subnet_id            = azurerm_subnet.example.id
-    public_ip_address_id = azurerm_public_ip.example.id
-  }
-}

@@ -20,6 +20,31 @@ terraform {
 }
 
 provider "azurerm" {
+  subscription_id = var.env_subscription_id
+
+  features {
+    key_vault {
+      recover_soft_deleted_key_vaults = true
+      purge_soft_delete_on_destroy    = true
+    }
+
+    template_deployment {
+      delete_nested_items_during_deletion = true
+    }
+
+    virtual_machine {
+      delete_os_disk_on_deletion = true
+    }
+
+    virtual_machine_scale_set {
+      roll_instances_when_required = true
+    }
+  }
+}
+
+provider "azurerm" {
+  alias = "ops"
+
   features {
     key_vault {
       recover_soft_deleted_key_vaults = true
