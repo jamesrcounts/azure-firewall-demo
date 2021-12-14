@@ -1,6 +1,14 @@
 terraform {
   required_version = ">= 1"
 
+  cloud {
+    organization = "azure-firewall-demo"
+
+    workspaces {
+      name = "prd"
+    }
+  }
+
   required_providers {
     azuread = {
       source  = "hashicorp/azuread"

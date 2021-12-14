@@ -1,9 +1,16 @@
-default: apply
+default: plan
 
 CONFIG := terraform.auto.tfvars
 
+backend_instance_id := obliging-primate
 env_subscription_id := bbb80ca8-cf8a-4d13-8fa4-6027d7e5b71d
 env_instance_id     := climbing-weevil
+
+${HOME}/.terraformrc:
+	az keyvault secret download \
+		--name terraformrc \
+		--vault-name kv-$(backend_instance_id) \
+		--file ${HOME}/.terraformrc
 
 $(CONFIG):
 	# TODO: this could also be loaded from keyvault
@@ -13,20 +20,21 @@ $(CONFIG):
 fmt:
 	terraform fmt -recursive
 
-init:
+.terraform: ${HOME}/.terraformrc
 	terraform init --upgrade
 	
 clean:
 	terraform destroy -auto-approve
-
-connect:
-	terraform init -get=false
 	
 validate:
 	terraform validate
 
-apply: $(CONFIG) fmt connect validate
-	terraform apply
+plan: .terraform $(CONFIG) fmt validate
+	terraform plan -out plan.tfplan
+	
+apply:
+	terraform apply plan.tfplan
+	rm plan.tfplan
 
 login:
 	az login --use-device-code
