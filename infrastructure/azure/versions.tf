@@ -1,13 +1,7 @@
 terraform {
   required_version = ">= 1"
 
-  cloud {
-    organization = "azure-firewall-demo"
-
-    workspaces {
-      name = "prd"
-    }
-  }
+  backend "remote" {}
 
   required_providers {
     azuread = {

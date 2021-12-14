@@ -29,3 +29,5 @@ override.tf.json
 # example: *tfplan*
 **/.DS_Store
 *.auto.tfvars
+infrastructure/azure/plan.tfplan
+infrastructure/azure/terraform.backend.tfvars

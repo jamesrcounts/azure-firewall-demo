@@ -17,11 +17,19 @@ $(CONFIG):
 	@echo 'env_instance_id="$(env_instance_id)"'   > $(CONFIG)
 	@echo 'env_subscription_id="$(env_subscription_id)"' >> $(CONFIG)
 
+terraform.backend.tfvars:
+	az keyvault secret download \
+		--name backend-config \
+		--vault-name kv-$(backend_instance_id) \
+		--file terraform.backend.tfvars
+
 fmt:
 	terraform fmt -recursive
 
-.terraform: ${HOME}/.terraformrc
-	terraform init --upgrade
+init: ${HOME}/.terraformrc terraform.backend.tfvars
+	terraform init --upgrade -backend-config terraform.backend.tfvars
+	terraform -v
+	terraform providers
 	
 clean:
 	terraform destroy -auto-approve
@@ -29,7 +37,7 @@ clean:
 validate:
 	terraform validate
 
-plan: .terraform $(CONFIG) fmt validate
+plan: init $(CONFIG) fmt validate
 	terraform plan -out plan.tfplan
 	
 apply:
