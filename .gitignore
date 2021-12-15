@@ -31,3 +31,7 @@ override.tf.json
 *.auto.tfvars
 infrastructure/azure/plan.tfplan
 infrastructure/azure/terraform.backend.tfvars
+infrastructure/scripts/ca-cert/*.crt
+infrastructure/scripts/ca-cert/*.csr
+infrastructure/scripts/ca-cert/*.key
+infrastructure/scripts/ca-cert/*.srl

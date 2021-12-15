@@ -28,7 +28,7 @@ resource "azurerm_firewall_policy" "afwp" {
 
   tls_certificate {
     name                = "CACert"
-    key_vault_secret_id = data.azurerm_key_vault_secret.certificate["prd"].id
+    key_vault_secret_id = azurerm_key_vault_certificate.ca_cert.secret_id
   }
 }
 

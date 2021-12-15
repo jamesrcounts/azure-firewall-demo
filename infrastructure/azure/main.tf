@@ -20,3 +20,4 @@ resource "azurerm_public_ip" "fw" {
   sku                 = "Standard"
 }
 
+data "azurerm_client_config" "current" {}

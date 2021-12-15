@@ -1,10 +1,17 @@
 default: plan
 
 CONFIG := terraform.auto.tfvars
+CERTS  := certs/interCA.pfx certs/rootCA.crt
 
 ops_instance_id     := obliging-primate
 env_subscription_id := bbb80ca8-cf8a-4d13-8fa4-6027d7e5b71d
 env_instance_id     := climbing-weevil
+
+$(CERTS):
+	cd ../scripts/ca-cert && \
+		bash cert.sh && \
+		mv -v interCA.pfx ../../azure/certs && \
+		mv -v rootCA.crt ../../azure/certs
 
 ${HOME}/.terraformrc:
 	az keyvault secret download \
@@ -38,7 +45,7 @@ clean:
 validate:
 	terraform validate
 
-plan: init $(CONFIG) fmt validate
+plan: init $(CONFIG) $(CERTS) fmt validate
 	terraform plan -out plan.tfplan
 	
 apply:
