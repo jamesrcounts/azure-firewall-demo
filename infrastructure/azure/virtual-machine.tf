@@ -40,7 +40,7 @@ resource "azurerm_windows_virtual_machine" "worker" {
 
 locals {
   bootstrap_command = <<COMMAND
-  echo '${filebase64("${path.module}/certs/rootCA.crt")}' > c:\\root.pem.base64 && powershell \"Set-Content -Path c:\\root.pem -Value ([Text.Encoding]::UTF8.GetString([convert]::FromBase64String((Get-Content -Path c:\\root.pem.base64))))\" && certutil -addstore root c:\\root.pem
+  echo '${filebase64("${path.module}/certs/rootCA.crt")}' > c:\root.pem.base64 && powershell \"Set-Content -Path c:\root.pem -Value ([Text.Encoding]::UTF8.GetString([convert]::FromBase64String((Get-Content -Path c:\root.pem.base64))))\" && certutil -addstore root c:\root.pem
 COMMAND
 }
 
