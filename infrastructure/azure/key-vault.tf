@@ -1,4 +1,7 @@
-// A dedicated key vault for the firewall, uses access policies due to apparent limitation in firewall.
+// A dedicated key vault for the firewall, uses access policies due to apparent 
+// limitation in firewall.
+// TODO: This may be a portal UI issue...test again now that you have the right
+// cert
 resource "azurerm_key_vault" "afw" {
   depends_on = [
     azurerm_user_assigned_identity.afwp
