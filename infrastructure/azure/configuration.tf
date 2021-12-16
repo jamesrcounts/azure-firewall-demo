@@ -12,6 +12,6 @@ data "azurerm_key_vault_secret" "certificate" {
     prd = "firewall-jamesrcounts-com"
   }
 
-  name         = each.value
   key_vault_id = data.azurerm_key_vault.config.id
+  name         = each.value
 }
