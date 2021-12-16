@@ -60,6 +60,10 @@ resource "azurerm_key_vault_access_policy" "management_access" {
 }
 
 resource "azurerm_key_vault_certificate" "ca_cert" {
+  depends_on = [
+    azurerm_key_vault_access_policy.management_access
+  ]
+
   name         = "CACert"
   key_vault_id = azurerm_key_vault.afw.id
 

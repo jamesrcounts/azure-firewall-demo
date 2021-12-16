@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3"
     }
+    pkcs12 = {
+      source  = "chilicat/pkcs12"
+      version = "~> 0"
+    }
   }
 }
 
