@@ -11,6 +11,7 @@ resource "azurerm_subnet" "subnet" {
     AzureBastionSubnet  = ["10.0.20.0/24"]
     AzureFirewallSubnet = ["10.0.100.0/24"]
     WorkerSubnet        = ["10.0.10.0/24"]
+    ServerSubnet        = ["10.0.40.0/24"]
   }
 
   address_prefixes     = each.value
