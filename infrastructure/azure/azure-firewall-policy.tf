@@ -82,6 +82,48 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
         type = "Https"
       }
     }
+
+    rule {
+      name             = "AllowAppService"
+      source_addresses = ["*"]
+      terminate_tls    = true
+
+      destination_fqdns = [
+        azurerm_app_service.webapp.default_site_hostname
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+
+    rule {
+      name             = "AllowURL"
+      source_addresses = ["*"]
+      terminate_tls    = true
+
+      destination_urls = [
+        "www.nytimes.com/section/world",
+        "www.nytimes.com/section/world/*",
+        "www.nytimes.com/vi-assets/static-assets/*"
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
   }
 
   application_rule_collection {
