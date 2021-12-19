@@ -49,6 +49,31 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   priority           = 200
 
   application_rule_collection {
+    name     = "GeneralWeb"
+    priority = 103
+    action   = "Allow"
+
+    rule {
+      name             = "AllowSports"
+      source_addresses = ["*"]
+      terminate_tls    = true
+      web_categories = [
+        "Sports"
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+
+  application_rule_collection {
     action   = "Allow"
     name     = "AllowWeb"
     priority = 101
@@ -111,7 +136,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
       destination_urls = [
         "www.nytimes.com/section/world",
         "www.nytimes.com/section/world/*",
-        "www.nytimes.com/vi-assets/static-assets/*"
+        "www.nytimes.com/vi-assets/static-assets/*",
+        "static01.nyt.com/images/*"
       ]
 
       protocols {
