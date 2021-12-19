@@ -42,23 +42,47 @@ resource "azurerm_network_security_rule" "http" {
   network_security_group_name = azurerm_network_security_group.web.name
 }
 
+resource "azurerm_network_security_rule" "https" {
+  name                        = "HTTPS"
+  priority                    = 2048
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.web.name
+}
+
 resource "azurerm_network_interface_security_group_association" "nsg_to_nic" {
   network_interface_id      = azurerm_network_interface.server.id
   network_security_group_id = azurerm_network_security_group.web.id
 }
 
+locals {
+  user_data = templatefile(
+    "${path.module}/scripts/server-setup.init.tftpl",
+    {
+      nginx_site_conf = filebase64("${path.module}/scripts/nginx-site.conf")
+      ssl_cert_b64    = base64encode(data.azurerm_key_vault_secret.certificate["crt"].value)
+      ssl_key_b64     = base64encode(data.azurerm_key_vault_secret.certificate["key"].value)
+    }
+  )
+}
 resource "azurerm_linux_virtual_machine" "server" {
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
   computer_name                   = "ServerVM"
-  custom_data                     = filebase64("${path.module}/scripts/install-nginx.sh")
+  custom_data                     = base64encode(local.user_data)
   disable_password_authentication = false
   location                        = data.azurerm_resource_group.rg.location
   name                            = "vm-server-${var.env_instance_id}"
   network_interface_ids           = [azurerm_network_interface.server.id]
   resource_group_name             = data.azurerm_resource_group.rg.name
+  size                            = "Standard_B2s"
   tags                            = local.tags
-  size                            = "Standard_DS1_v2"
 
   os_disk {
     caching              = "ReadWrite"
@@ -73,3 +97,5 @@ resource "azurerm_linux_virtual_machine" "server" {
     version   = "latest"
   }
 }
+
+// todo dns

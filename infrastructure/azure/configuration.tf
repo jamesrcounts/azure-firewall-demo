@@ -9,7 +9,8 @@ data "azurerm_key_vault_secret" "certificate" {
   provider = azurerm.ops
 
   for_each = {
-    prd = "firewall-jamesrcounts-com"
+    crt = "firewall-jamesrcounts-com-cert"
+    key = "firewall-jamesrcounts-com-key"
   }
 
   key_vault_id = data.azurerm_key_vault.config.id

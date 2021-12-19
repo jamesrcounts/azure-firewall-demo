@@ -19,8 +19,3 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.net.name
 }
-
-resource "azurerm_subnet_route_table_association" "worker_rt" {
-  route_table_id = azurerm_route_table.worker.id
-  subnet_id      = azurerm_subnet.subnet["WorkerSubnet"].id
-}
