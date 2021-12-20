@@ -18,20 +18,6 @@ resource "azurerm_network_security_group" "web" {
   tags                = local.tags
 }
 
-resource "azurerm_network_security_rule" "http" {
-  name                        = "HTTP"
-  priority                    = 1024
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = data.azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.web.name
-}
-
 resource "azurerm_network_security_rule" "https" {
   name                        = "HTTPS"
   priority                    = 2048
@@ -40,6 +26,34 @@ resource "azurerm_network_security_rule" "https" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
+  source_address_prefixes     = azurerm_subnet.subnet["AzureFirewallSubnet"].address_prefixes
+  destination_address_prefix  = "*"
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.web.name
+}
+
+resource "azurerm_network_security_rule" "default_deny_in" {
+  name                        = "default-deny"
+  priority                    = 4096
+  direction                   = "Inbound"
+  access                      = "Deny"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.web.name
+}
+
+resource "azurerm_network_security_rule" "default_deny_out" {
+  name                        = "default-deny"
+  priority                    = 4096
+  direction                   = "Outbound"
+  access                      = "Deny"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = data.azurerm_resource_group.rg.name
