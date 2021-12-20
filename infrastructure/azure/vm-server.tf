@@ -1,12 +1,3 @@
-resource "azurerm_public_ip" "server" {
-  allocation_method   = "Static"
-  location            = data.azurerm_resource_group.rg.location
-  name                = "pip-server-${var.env_instance_id}"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  sku                 = "Standard"
-  tags                = local.tags
-}
-
 resource "azurerm_network_interface" "server" {
   location            = data.azurerm_resource_group.rg.location
   name                = "nic-server-${var.env_instance_id}"
@@ -16,7 +7,6 @@ resource "azurerm_network_interface" "server" {
   ip_configuration {
     name                          = "ServerIPConfiguration"
     private_ip_address_allocation = "dynamic"
-    public_ip_address_id          = azurerm_public_ip.server.id
     subnet_id                     = azurerm_subnet.subnet["ServerSubnet"].id
   }
 }
