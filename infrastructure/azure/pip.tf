@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "pip" {
-  for_each = toset(["afw", "bastion", "srvr"])
+  for_each = toset(["afw", "bastion", "srvr", "agw"])
 
   allocation_method   = "Static"
   location            = data.azurerm_resource_group.rg.location

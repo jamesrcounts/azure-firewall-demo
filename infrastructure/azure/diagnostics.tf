@@ -11,5 +11,6 @@ module "diagnostics" {
     pipfw   = azurerm_public_ip.pip["afw"].id
     piphb   = azurerm_public_ip.pip["bastion"].id
     vnet    = azurerm_virtual_network.net.id
+    agw=azurerm_application_gateway.agw.id
   }
 }
