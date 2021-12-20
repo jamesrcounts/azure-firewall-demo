@@ -48,9 +48,25 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   name               = "afwp-rcg-${var.env_instance_id}"
   priority           = 200
 
+  nat_rule_collection {
+    name     = "server"
+    action   = "Dnat"
+    priority = 128
+
+    rule {
+      name                = "internet_to_webserver"
+      protocols           = ["TCP"]
+      source_addresses    = ["*"]
+      destination_address = azurerm_public_ip.pip["afw"].ip_address
+      destination_ports   = [443]
+      translated_address  = azurerm_network_interface.server.private_ip_address
+      translated_port     = 443
+    }
+  }
+
   application_rule_collection {
     name     = "GeneralWeb"
-    priority = 103
+    priority = 1024
     action   = "Allow"
 
     rule {
@@ -76,7 +92,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   application_rule_collection {
     action   = "Allow"
     name     = "AllowWeb"
-    priority = 101
+    priority = 512
 
     rule {
       name             = "AllowAzure"
@@ -155,7 +171,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   application_rule_collection {
     action   = "Deny"
     name     = "BlockPage"
-    priority = 100
+    priority = 256
 
     rule {
       name             = "BlockAzureEvents"
