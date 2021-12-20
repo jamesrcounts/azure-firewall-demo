@@ -33,7 +33,7 @@ resource "azurerm_network_security_rule" "https" {
 }
 
 resource "azurerm_network_security_rule" "default_deny_in" {
-  name                        = "default-deny"
+  name                        = "default-deny-in"
   priority                    = 4096
   direction                   = "Inbound"
   access                      = "Deny"
@@ -47,7 +47,7 @@ resource "azurerm_network_security_rule" "default_deny_in" {
 }
 
 resource "azurerm_network_security_rule" "default_deny_out" {
-  name                        = "default-deny"
+  name                        = "default-deny-out"
   priority                    = 4096
   direction                   = "Outbound"
   access                      = "Deny"

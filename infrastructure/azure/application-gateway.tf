@@ -39,7 +39,7 @@ resource "azurerm_application_gateway" "agw" {
 
   backend_address_pool {
     name         = local.backend_address_pool_name
-    ip_addresses = [azurerm_firewall.fw.ip_configuration.0.private_ip_address]
+    ip_addresses = [azurerm_network_interface.server.private_ip_address]
   }
 
   backend_http_settings {
@@ -147,4 +147,28 @@ resource "azurerm_application_gateway" "agw" {
     rule_set_type    = "OWASP"
     rule_set_version = "3.1"
   }
+}
+
+resource "azurerm_route_table" "agw" {
+  disable_bgp_route_propagation = false
+  location                      = data.azurerm_resource_group.rg.location
+  name                          = "rt-agw-${var.env_instance_id}"
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  tags                          = local.tags
+}
+
+resource "azurerm_route" "server_thru_firewall" {
+  address_prefix         = azurerm_subnet.subnet["ServerSubnet"].address_prefix
+  name                   = "ServerThruFirewall"
+  next_hop_in_ip_address = azurerm_firewall.fw.ip_configuration.0.private_ip_address
+  next_hop_type          = "VirtualAppliance"
+  resource_group_name    = data.azurerm_resource_group.rg.name
+  route_table_name       = azurerm_route_table.agw.name
+}
+
+resource "azurerm_subnet_route_table_association" "server_thru_firewall" {
+  for_each = toset(["ServerSubnet"])
+
+  route_table_id = azurerm_route_table.agw.id
+  subnet_id      = azurerm_subnet.subnet[each.key].id
 }

@@ -7,5 +7,5 @@ resource "aws_route53_record" "aks" {
   name    = local.hostname_server
   type    = "A"
   ttl     = "300"
-  records = [azurerm_public_ip.pip["afw"].ip_address]
+  records = [azurerm_public_ip.pip["agw"].ip_address]
 }
