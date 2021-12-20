@@ -47,7 +47,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   firewall_policy_id = azurerm_firewall_policy.afwp.id
   name               = "afwp-rcg-${var.env_instance_id}"
   priority           = 200
- 
+
   application_rule_collection {
     name     = "GeneralWeb"
     priority = 1024
@@ -121,6 +121,22 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
         port = 80
         type = "Http"
       }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+
+    rule {
+      name             = "AllowWebServer"
+      source_addresses = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
+      terminate_tls    = false
+      # todo make true
+
+      destination_fqdns = [
+        local.hostname_server
+      ]
 
       protocols {
         port = 443
