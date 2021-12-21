@@ -26,7 +26,7 @@ resource "azurerm_network_security_rule" "https" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
-  source_address_prefixes     = azurerm_subnet.subnet["AzureFirewallSubnet"].address_prefixes
+  source_address_prefixes     = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefixes
   destination_address_prefix  = "*"
   resource_group_name         = data.azurerm_resource_group.rg.name
   network_security_group_name = azurerm_network_security_group.web.name
@@ -75,6 +75,7 @@ locals {
     }
   )
 }
+
 resource "azurerm_linux_virtual_machine" "server" {
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
@@ -102,4 +103,26 @@ resource "azurerm_linux_virtual_machine" "server" {
   }
 }
 
-// todo dns
+resource "azurerm_route_table" "server" {
+  disable_bgp_route_propagation = false
+  location                      = data.azurerm_resource_group.rg.location
+  name                          = "rt-server-${var.env_instance_id}"
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  tags                          = local.tags
+}
+
+resource "azurerm_route" "agw_thru_firewall" {
+  address_prefix         = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix
+  name                   = "AgwThruFirewall"
+  next_hop_in_ip_address = azurerm_firewall.fw.ip_configuration.0.private_ip_address
+  next_hop_type          = "VirtualAppliance"
+  resource_group_name    = data.azurerm_resource_group.rg.name
+  route_table_name       = azurerm_route_table.server.name
+}
+
+// resource "azurerm_subnet_route_table_association" "agw_thru_firewall" {
+//   for_each = toset(["ServerSubnet"])
+
+//   route_table_id = azurerm_route_table.server.id
+//   subnet_id      = azurerm_subnet.subnet[each.key].id
+// }

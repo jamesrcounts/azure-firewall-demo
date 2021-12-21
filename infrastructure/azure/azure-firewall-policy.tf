@@ -48,23 +48,20 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
   name               = "afwp-rcg-${var.env_instance_id}"
   priority           = 200
 
+  // priority 256
   application_rule_collection {
-    name     = "GeneralWeb"
-    priority = 1024
-    action   = "Allow"
+    action   = "Deny"
+    name     = "BlockPage"
+    priority = 256
 
     rule {
-      name             = "AllowSports"
+      name             = "BlockAzureEvents"
       source_addresses = ["*"]
       terminate_tls    = true
-      web_categories = [
-        "Sports"
+      destination_urls = [
+        "azure.microsoft.com/en-us/community/events",
+        "azure.microsoft.com/en-us/community/events/*"
       ]
-
-      protocols {
-        port = 80
-        type = "Http"
-      }
 
       protocols {
         port = 443
@@ -73,6 +70,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
     }
   }
 
+  // priority 512
   application_rule_collection {
     action   = "Allow"
     name     = "AllowWeb"
@@ -168,19 +166,24 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
     }
   }
 
+  // priority 1024
   application_rule_collection {
-    action   = "Deny"
-    name     = "BlockPage"
-    priority = 256
+    name     = "GeneralWeb"
+    priority = 1024
+    action   = "Allow"
 
     rule {
-      name             = "BlockAzureEvents"
+      name             = "AllowSports"
       source_addresses = ["*"]
       terminate_tls    = true
-      destination_urls = [
-        "azure.microsoft.com/en-us/community/events",
-        "azure.microsoft.com/en-us/community/events/*"
+      web_categories = [
+        "Sports"
       ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
 
       protocols {
         port = 443

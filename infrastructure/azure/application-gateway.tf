@@ -166,9 +166,9 @@ resource "azurerm_route" "server_thru_firewall" {
   route_table_name       = azurerm_route_table.agw.name
 }
 
-resource "azurerm_subnet_route_table_association" "server_thru_firewall" {
-  for_each = toset(["ServerSubnet"])
+// resource "azurerm_subnet_route_table_association" "server_thru_firewall" {
+//   for_each = toset(["ServerSubnet"])
 
-  route_table_id = azurerm_route_table.agw.id
-  subnet_id      = azurerm_subnet.subnet[each.key].id
-}
+//   route_table_id = azurerm_route_table.agw.id
+//   subnet_id      = azurerm_subnet.subnet[each.key].id
+// }
