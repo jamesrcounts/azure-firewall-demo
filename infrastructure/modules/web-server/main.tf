@@ -35,27 +35,3 @@ resource "azurerm_linux_virtual_machine" "server" {
     version   = "latest"
   }
 }
-
-resource "azurerm_route_table" "server" {
-  disable_bgp_route_propagation = false
-  location                      = var.resource_group.location
-  name                          = "rt-server-${var.instance_id}"
-  resource_group_name           = var.resource_group.name
-  tags                          = var.tags
-}
-
-// resource "azurerm_route" "agw_thru_firewall" {
-//   address_prefix         = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix
-//   name                   = "AgwThruFirewall"
-//   next_hop_in_ip_address = azurerm_firewall.fw.ip_configuration.0.private_ip_address
-//   next_hop_type          = "VirtualAppliance"
-//   resource_group_name    = var.resource_group.name
-//   route_table_name       = azurerm_route_table.server.name
-// }
-
-// resource "azurerm_subnet_route_table_association" "agw_thru_firewall" {
-//   for_each = toset(["ServerSubnet"])
-
-//   route_table_id = azurerm_route_table.server.id
-//   subnet_id      = azurerm_subnet.subnet[each.key].id
-// }
