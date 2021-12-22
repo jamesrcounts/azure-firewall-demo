@@ -47,6 +47,17 @@ resource "azurerm_subnet" "hub_subnet" {
   virtual_network_name = azurerm_virtual_network.net["hub"].name
 }
 
+resource "azurerm_subnet" "server_subnet" {
+  for_each = {
+    ServerSubnet = 3
+  }
+
+  address_prefixes     = [cidrsubnet(azurerm_virtual_network.net["server"].address_space.0, 2, each.value)]
+  name                 = each.key
+  resource_group_name  = var.resource_group.name
+  virtual_network_name = azurerm_virtual_network.net["server"].name
+}
+
 resource "azurerm_network_security_group" "web" {
   name                = "nsg-web"
   location            = var.resource_group.location
@@ -94,4 +105,22 @@ resource "azurerm_network_security_rule" "default_deny_out" {
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group.name
   network_security_group_name = azurerm_network_security_group.web.name
+}
+
+resource "azurerm_network_interface" "server" {
+  location            = var.resource_group.location
+  name                = "nic-server-${var.instance_id}"
+  resource_group_name = var.resource_group.name
+  tags                = var.tags
+
+  ip_configuration {
+    name                          = "ServerIPConfiguration"
+    private_ip_address_allocation = "dynamic"
+    subnet_id                     = azurerm_subnet.server_subnet["ServerSubnet"].id
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "nsg_to_server" {
+  subnet_id                 = azurerm_subnet.server_subnet["ServerSubnet"].id
+  network_security_group_id = azurerm_network_security_group.web.id
 }
