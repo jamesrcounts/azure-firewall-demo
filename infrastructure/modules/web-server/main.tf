@@ -9,74 +9,6 @@ locals {
   )
 }
 
-resource "azurerm_network_interface" "server" {
-  location            = var.resource_group.location
-  name                = "nic-server-${var.instance_id}"
-  resource_group_name = var.resource_group.name
-  tags                = var.tags
-
-  ip_configuration {
-    name                          = "ServerIPConfiguration"
-    private_ip_address_allocation = "dynamic"
-    subnet_id                     = var.subnet_id
-  }
-}
-
-resource "azurerm_network_security_group" "web" {
-  name                = "nsg-web"
-  location            = var.resource_group.location
-  resource_group_name = var.resource_group.name
-  tags                = var.tags
-}
-
-// resource "azurerm_network_security_rule" "https" {
-//   name                        = "HTTPS"
-//   priority                    = 2048
-//   direction                   = "Inbound"
-//   access                      = "Allow"
-//   protocol                    = "Tcp"
-//   source_port_range           = "*"
-//   destination_port_range      = "443"
-//   source_address_prefixes     = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefixes
-//   destination_address_prefix  = "*"
-//   resource_group_name         = var.resource_group.name
-//   network_security_group_name = azurerm_network_security_group.web.name
-// }
-
-resource "azurerm_network_security_rule" "default_deny_in" {
-  name                        = "default-deny-in"
-  priority                    = 4096
-  direction                   = "Inbound"
-  access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
-  network_security_group_name = azurerm_network_security_group.web.name
-}
-
-resource "azurerm_network_security_rule" "default_deny_out" {
-  name                        = "default-deny-out"
-  priority                    = 4096
-  direction                   = "Outbound"
-  access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
-  network_security_group_name = azurerm_network_security_group.web.name
-}
-
-resource "azurerm_network_interface_security_group_association" "nsg_to_nic" {
-  network_interface_id      = azurerm_network_interface.server.id
-  network_security_group_id = azurerm_network_security_group.web.id
-}
-
-
 resource "azurerm_linux_virtual_machine" "server" {
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
@@ -85,7 +17,7 @@ resource "azurerm_linux_virtual_machine" "server" {
   disable_password_authentication = false
   location                        = var.resource_group.location
   name                            = "vm-server-${var.instance_id}"
-  network_interface_ids           = [azurerm_network_interface.server.id]
+  network_interface_ids           = [var.network_interface_id]
   resource_group_name             = var.resource_group.name
   size                            = "Standard_B2s"
   tags                            = var.tags

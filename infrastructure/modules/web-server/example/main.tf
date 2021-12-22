@@ -4,6 +4,7 @@ provider "azurerm" {
 
 locals {
   instance_id = "bleep-bloop"
+  tags        = azurerm_resource_group.test.tags
 }
 
 resource "azurerm_resource_group" "test" {
@@ -24,7 +25,7 @@ resource "azurerm_virtual_network" "net" {
   location            = azurerm_resource_group.test.location
   name                = "vnet-${each.key}-${local.instance_id}"
   resource_group_name = azurerm_resource_group.test.name
-  tags                = azurerm_resource_group.test.tags
+  tags                = local.tags
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -36,6 +37,19 @@ resource "azurerm_subnet" "subnet" {
   name                 = each.key
   resource_group_name  = azurerm_resource_group.test.name
   virtual_network_name = azurerm_virtual_network.net["server"].name
+}
+
+resource "azurerm_network_interface" "server" {
+  location            = azurerm_resource_group.test.location
+  name                = "nic-server-${local.instance_id}"
+  resource_group_name = azurerm_resource_group.test.name
+  tags                = local.tags
+
+  ip_configuration {
+    name                          = "ServerIPConfiguration"
+    private_ip_address_allocation = "dynamic"
+    subnet_id                     = azurerm_subnet.subnet["ServerSubnet"].id
+  }
 }
 
 resource "tls_private_key" "example" {
@@ -64,10 +78,10 @@ resource "tls_self_signed_cert" "example" {
 module "test" {
   source = "../"
 
-  instance_id    = azurerm_resource_group.test.tags["instance_id"]
-  resource_group = azurerm_resource_group.test
-  tags           = azurerm_resource_group.test.tags
-  subnet_id      = azurerm_subnet.subnet["ServerSubnet"].id
+  instance_id          = local.instance_id
+  network_interface_id = azurerm_network_interface.server.id
+  resource_group       = azurerm_resource_group.test
+  tags                 = local.tags
 
   certificate = {
     cert_pem        = tls_self_signed_cert.example.cert_pem

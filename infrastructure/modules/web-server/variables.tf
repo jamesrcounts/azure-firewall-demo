@@ -25,7 +25,7 @@ variable "certificate" {
   })
 }
 
-variable "subnet_id" {
-  description = "Subnet to deploy the server into."
+variable "network_interface_id" {
+  description = "A Network Interface ID which should be attached to this Virtual Machine."
   type        = string
 }
