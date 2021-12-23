@@ -20,7 +20,7 @@ data "azurerm_key_vault_secret" "certificate" {
   provider = azurerm.ops
 
   for_each = {
-    // pfx = "firewall-jamesrcounts-com"
+    pfx = "firewall-jamesrcounts-com"
     crt = "firewall-jamesrcounts-com-cert"
     key = "firewall-jamesrcounts-com-key"
   }
