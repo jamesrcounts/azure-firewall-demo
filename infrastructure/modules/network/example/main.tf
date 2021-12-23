@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "test" {
-  name     = "example"
+  name     = "rg-network-example"
   location = "centralus"
   tags = {
     mytag       = "value"
@@ -21,4 +21,8 @@ module "test" {
 
 output "network_interface_id" {
   value = module.test.network_interface_id
+}
+
+output "bastion_subnet_id" {
+  value = module.test.hub_subnet["AzureBastionSubnet"].id
 }

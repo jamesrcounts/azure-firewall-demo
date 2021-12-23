@@ -79,32 +79,42 @@ resource "azurerm_network_security_rule" "https" {
   network_security_group_name = azurerm_network_security_group.web.name
 }
 
-resource "azurerm_network_security_rule" "default_deny_in" {
-  name                        = "default-deny-in"
-  priority                    = 4096
-  direction                   = "Inbound"
-  access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
-  network_security_group_name = azurerm_network_security_group.web.name
-}
+# TODO Enable once AGW is up
+// resource "azurerm_network_security_rule" "default_deny_in" {
+//   name                        = "default-deny-in"
+//   priority                    = 4096
+//   direction                   = "Inbound"
+//   access                      = "Deny"
+//   protocol                    = "*"
+//   source_port_range           = "*"
+//   destination_port_range      = "*"
+//   source_address_prefix       = "*"
+//   destination_address_prefix  = "*"
+//   resource_group_name         = var.resource_group.name
+//   network_security_group_name = azurerm_network_security_group.web.name
+// }
 
-resource "azurerm_network_security_rule" "default_deny_out" {
-  name                        = "default-deny-out"
-  priority                    = 4096
-  direction                   = "Outbound"
-  access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
-  network_security_group_name = azurerm_network_security_group.web.name
+# TODO Enable once firewall is up
+// resource "azurerm_network_security_rule" "default_deny_out" {
+//   name                        = "default-deny-out"
+//   priority                    = 4096
+//   direction                   = "Outbound"
+//   access                      = "Deny"
+//   protocol                    = "*"
+//   source_port_range           = "*"
+//   destination_port_range      = "*"
+//   source_address_prefix       = "*"
+//   destination_address_prefix  = "*"
+//   resource_group_name         = var.resource_group.name
+//   network_security_group_name = azurerm_network_security_group.web.name
+// }
+
+resource "azurerm_public_ip" "example" {
+  name                = "pip-${var.instance_id}"
+  resource_group_name = var.resource_group.name
+  location            = var.resource_group.location
+  allocation_method   = "Static"
+  tags                = var.tags
 }
 
 resource "azurerm_network_interface" "server" {
@@ -116,6 +126,7 @@ resource "azurerm_network_interface" "server" {
   ip_configuration {
     name                          = "ServerIPConfiguration"
     private_ip_address_allocation = "dynamic"
+    public_ip_address_id          = azurerm_public_ip.example.id
     subnet_id                     = azurerm_subnet.server_subnet["ServerSubnet"].id
   }
 }
@@ -146,4 +157,3 @@ resource "azurerm_subnet_route_table_association" "server" {
 //   resource_group_name    = var.resource_group.name
 //   route_table_name       = azurerm_route_table.server.name
 // }
-
