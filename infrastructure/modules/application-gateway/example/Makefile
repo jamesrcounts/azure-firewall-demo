@@ -12,22 +12,17 @@ $(CONFIG):
 	@echo 'ops_instance_id="$(ops_instance_id)"'         >> $(CONFIG)
 	@echo 'env_subscription_id="$(env_subscription_id)"' >> $(CONFIG)
 
-terraform.backend.tfvars:
-	az keyvault secret download \
-		--name backend-config \
-		--vault-name kv-$(ops_instance_id)     \
-		--file terraform.backend.tfvars
-
 fmt:
 	cd .. && terraform fmt -recursive
 
-init: ${HOME}/.terraformrc terraform.backend.tfvars
-	terraform init --upgrade -backend-config terraform.backend.tfvars
+init: ${HOME}/.terraformrc
+	terraform init --upgrade 
 	terraform -v
 	terraform providers
 	
 clean:
 	terraform destroy -auto-approve
+	rm terraform.backend.tfvars
 	
 validate:
 	terraform validate
