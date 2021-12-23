@@ -136,24 +136,26 @@ resource "azurerm_subnet_network_security_group_association" "nsg_to_server" {
   network_security_group_id = azurerm_network_security_group.web.id
 }
 
-resource "azurerm_route_table" "server" {
+resource "azurerm_route_table" "rt" {
+  for_each = toset([
+    "agw",
+    "server",
+  ])
+
   disable_bgp_route_propagation = true
   location                      = var.resource_group.location
-  name                          = "rt-server-${var.instance_id}"
+  name                          = "rt-${each.key}-${var.instance_id}"
   resource_group_name           = var.resource_group.name
   tags                          = var.tags
 }
 
-resource "azurerm_subnet_route_table_association" "server" {
-  route_table_id = azurerm_route_table.server.id
-  subnet_id      = azurerm_subnet.server_subnet["ServerSubnet"].id
+resource "azurerm_subnet_route_table_association" "rta" {
+  for_each = {
+    agw    = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].id
+    server = azurerm_subnet.server_subnet["ServerSubnet"].id
+  }
+
+  route_table_id = azurerm_route_table.rt[each.key].id
+  subnet_id      = each.value
 }
 
-// resource "azurerm_route" "agw_thru_firewall" {
-//   address_prefix         = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix
-//   name                   = "AgwThruFirewall"
-//   next_hop_in_ip_address = azurerm_firewall.fw.ip_configuration.0.private_ip_address
-//   next_hop_type          = "VirtualAppliance"
-//   resource_group_name    = var.resource_group.name
-//   route_table_name       = azurerm_route_table.server.name
-// }
