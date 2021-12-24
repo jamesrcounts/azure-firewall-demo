@@ -1,6 +1,9 @@
-output "network_interface_id" {
+output "network_interface" {
   description = "A network interface in the server virtual network."
-  value       = azurerm_network_interface.server.id
+  value = {
+    id                 = azurerm_network_interface.server.id
+    private_ip_address = azurerm_network_interface.server.private_ip_address
+  }
 }
 
 output "hub_subnet" {

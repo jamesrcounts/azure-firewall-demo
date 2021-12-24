@@ -20,7 +20,7 @@ module "test" {
 }
 
 output "network_interface_id" {
-  value = module.test.network_interface_id
+  value = module.test.network_interface.id
 }
 
 output "bastion_subnet_id" {
