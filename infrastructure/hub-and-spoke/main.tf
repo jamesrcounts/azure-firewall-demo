@@ -19,3 +19,39 @@ locals {
 //   resource_group_name    = data.azurerm_resource_group.rg.name
 //   route_table_name       = azurerm_route_table.agw.name
 // }
+
+// rule {
+//   name             = "AllowAppService"
+//   source_addresses = ["*"]
+//   terminate_tls    = true
+
+//   destination_fqdns = [
+//     azurerm_app_service.webapp.default_site_hostname
+//   ]
+
+//   protocols {
+//     port = 80
+//     type = "Http"
+//   }
+
+//   protocols {
+//     port = 443
+//     type = "Https"
+//   }
+// }
+
+// rule {
+//   name             = "AllowWebServer"
+//   source_addresses = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
+//   terminate_tls    = false
+//   # todo make true
+
+//   destination_fqdns = [
+//     local.hostname_server
+//   ]
+
+//   protocols {
+//     port = 443
+//     type = "Https"
+//   }
+// }
