@@ -10,7 +10,7 @@ module "agw" {
   backend_addresses     = [module.networks.network_interface.private_ip_address]
   host_name             = "firewall.jamesrcounts.com"
   instance_id           = var.env_instance_id
-  subnet_id             = module.networks.hub_subnet["ApplicationGatewaySubnet"].id
+  subnet_id             = module.networks.subnet["hub"]["ApplicationGatewaySubnet"].id
   tags                  = local.tags
 
   resource_groups = {
