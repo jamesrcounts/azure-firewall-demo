@@ -24,5 +24,5 @@ output "network_interface_id" {
 }
 
 output "bastion_subnet_id" {
-  value = module.test.hub_subnet["AzureBastionSubnet"].id
+  value = module.test.subnet["hub"]["AzureBastionSubnet"].id
 }
