@@ -119,8 +119,6 @@ resource "azurerm_role_assignment" "keyvault_admin" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-
-
 resource "azurerm_key_vault" "example" {
   name                       = "kv-${local.instance_id}"
   location                   = azurerm_resource_group.test.location

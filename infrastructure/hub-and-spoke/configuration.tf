@@ -20,9 +20,10 @@ data "azurerm_key_vault_secret" "certificate" {
   provider = azurerm.ops
 
   for_each = {
-    pfx = "firewall-jamesrcounts-com"
+    ca  = "CACert"
     crt = "firewall-jamesrcounts-com-cert"
     key = "firewall-jamesrcounts-com-key"
+    pfx = "firewall-jamesrcounts-com"
   }
 
   key_vault_id = data.azurerm_key_vault.config.id

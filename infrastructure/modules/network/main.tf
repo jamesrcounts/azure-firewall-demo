@@ -109,14 +109,6 @@ resource "azurerm_network_security_rule" "https" {
 //   network_security_group_name = azurerm_network_security_group.web.name
 // }
 
-resource "azurerm_public_ip" "example" {
-  name                = "pip-${var.instance_id}"
-  resource_group_name = var.resource_group.name
-  location            = var.resource_group.location
-  allocation_method   = "Static"
-  tags                = var.tags
-}
-
 resource "azurerm_network_interface" "server" {
   location            = var.resource_group.location
   name                = "nic-server-${var.instance_id}"
@@ -126,7 +118,6 @@ resource "azurerm_network_interface" "server" {
   ip_configuration {
     name                          = "ServerIPConfiguration"
     private_ip_address_allocation = "dynamic"
-    public_ip_address_id          = azurerm_public_ip.example.id
     subnet_id                     = azurerm_subnet.server_subnet["ServerSubnet"].id
   }
 }
