@@ -150,3 +150,30 @@ resource "azurerm_subnet_route_table_association" "rta" {
   subnet_id      = each.value
 }
 
+data "azurerm_network_watcher" "nw" {
+  name                = "NetworkWatcher_${var.resource_group.location}"
+  resource_group_name = "NetworkWatcherRG"
+}
+
+resource "azurerm_network_watcher_flow_log" "web_network_logs" {
+  enabled                   = true
+  network_security_group_id = azurerm_network_security_group.web.id
+  network_watcher_name      = data.azurerm_network_watcher.nw.name
+  resource_group_name       = "NetworkWatcherRG"
+  storage_account_id        = var.log_storage_account_id
+  version                   = 2
+  tags                      = var.tags
+
+  retention_policy {
+    enabled = true
+    days    = 7
+  }
+
+  traffic_analytics {
+    enabled               = true
+    interval_in_minutes   = 10
+    workspace_id          = var.log_analytics_workspace.workspace_id
+    workspace_region      = var.log_analytics_workspace.location
+    workspace_resource_id = var.log_analytics_workspace.id
+  }
+}
