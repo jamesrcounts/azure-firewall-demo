@@ -113,6 +113,14 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name = azurerm_virtual_network.net["hub"].name
 }
 
+resource "azurerm_log_analytics_workspace" "example" {
+  name                = "acctest-01"
+  location            = azurerm_resource_group.test.location
+  resource_group_name = azurerm_resource_group.test.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 module "test" {
   source = "../"
 
@@ -121,12 +129,13 @@ module "test" {
     azurerm.ops = azurerm
   }
 
-  certificate_secret_id = azurerm_key_vault_certificate.example.secret_id
-  backend_addresses     = ["192.168.0.1"]
-  host_name             = "test.contoso.com"
-  instance_id           = local.instance_id
-  subnet_id             = azurerm_subnet.subnet["ApplicationGatewaySubnet"].id
-  tags                  = local.tags
+  certificate_secret_id      = azurerm_key_vault_certificate.example.secret_id
+  backend_addresses          = ["192.168.0.1"]
+  host_name                  = "test.contoso.com"
+  instance_id                = local.instance_id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+  subnet_id                  = azurerm_subnet.subnet["ApplicationGatewaySubnet"].id
+  tags                       = local.tags
 
   resource_groups = {
     env = azurerm_resource_group.test

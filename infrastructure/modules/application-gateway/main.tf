@@ -156,3 +156,14 @@ resource "azurerm_application_gateway" "agw" {
     rule_set_version = "3.1"
   }
 }
+
+module "diagnostics" {
+  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.1"
+
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  monitored_services = {
+    pip = azurerm_public_ip.pip.id
+    agw = azurerm_application_gateway.agw.id
+  }
+}
