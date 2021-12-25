@@ -18,6 +18,11 @@ resource "azurerm_role_assignment" "keyvault_secret_user" {
 }
 
 resource "azurerm_firewall_policy" "afwp" {
+  depends_on = [
+    azurerm_role_assignment.keyvault_certificate_officer,
+    azurerm_role_assignment.keyvault_secret_user
+  ]
+
   location            = var.resource_group.location
   name                = "afwp-${var.instance_id}"
   resource_group_name = var.resource_group.name
@@ -118,7 +123,29 @@ resource "azurerm_firewall_policy_rule_collection_group" "rules" {
       }
     }
 
+    rule {
+      name             = "AllowOSUpdates"
+      source_addresses = ["*"]
+      destination_fqdns = [
+        "api.snapcraft.io",
+        "azure.archive.ubuntu.com",
+        "changelogs.ubuntu.com",
+        "download.opensuse.org",
+        "motd.ubuntu.com",
+        "packages.microsoft.com",
+        "security.ubuntu.com",
+        "snapcraft.io",
+      ]
 
+      protocols {
+        type = "Http"
+        port = 80
+      }
+      protocols {
+        type = "Https"
+        port = 443
+      }
+    }
 
     rule {
       name             = "AllowURL"
@@ -193,5 +220,16 @@ resource "azurerm_firewall" "fw" {
     name                 = "FirewallIPConfiguration"
     public_ip_address_id = azurerm_public_ip.pip.id
     subnet_id            = var.subnet_id
+  }
+}
+
+module "diagnostics" {
+  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.1"
+
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  monitored_services = {
+    fw    = azurerm_firewall.fw.id
+    pipfw = azurerm_public_ip.pip.id
   }
 }

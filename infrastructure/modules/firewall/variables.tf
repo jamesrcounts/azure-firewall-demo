@@ -8,6 +8,11 @@ variable "instance_id" {
   type        = string
 }
 
+variable "log_analytics_workspace_id" {
+  description = "The workspace to write logs into."
+  type        = string
+}
+
 variable "resource_group" {
   description = "The resource group to deploy the networks into."
   type = object({

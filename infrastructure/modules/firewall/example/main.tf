@@ -140,12 +140,21 @@ resource "azurerm_key_vault_certificate" "example" {
   }
 }
 
+resource "azurerm_log_analytics_workspace" "example" {
+  name                = "acctest-01"
+  location            = azurerm_resource_group.test.location
+  resource_group_name = azurerm_resource_group.test.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 module "firewall" {
   source = "../"
 
-  ca_secret_id   = azurerm_key_vault_certificate.example.secret_id
-  instance_id    = local.instance_id
-  resource_group = azurerm_resource_group.test
-  subnet_id      = azurerm_subnet.subnet["AzureFirewallSubnet"].id
-  tags           = local.tags
+  ca_secret_id               = azurerm_key_vault_certificate.example.secret_id
+  instance_id                = local.instance_id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+  resource_group             = azurerm_resource_group.test
+  subnet_id                  = azurerm_subnet.subnet["AzureFirewallSubnet"].id
+  tags                       = local.tags
 }
