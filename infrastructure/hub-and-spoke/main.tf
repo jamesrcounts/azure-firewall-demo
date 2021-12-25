@@ -11,6 +11,15 @@ resource "azurerm_route" "server_to_agw" {
   route_table_name       = module.networks.route_table["server"].name
 }
 
+// resource "azurerm_route" "server_to_internet" {
+//   address_prefix         = "0.0.0.0/0"
+//   name                   = "ServerToInternet"
+//   next_hop_in_ip_address = module.firewall.private_ip_address
+//   next_hop_type          = "VirtualAppliance"
+//   resource_group_name    = data.azurerm_resource_group.rg.name
+//   route_table_name       = module.networks.route_table["server"].name
+// }
+
 resource "azurerm_route" "agw_to_server" {
   address_prefix         = module.networks.subnet["server"]["ServerSubnet"].address_prefix
   name                   = "AgwToServer"
@@ -18,6 +27,35 @@ resource "azurerm_route" "agw_to_server" {
   next_hop_type          = "VirtualAppliance"
   resource_group_name    = data.azurerm_resource_group.rg.name
   route_table_name       = module.networks.route_table["agw"].name
+}
+
+
+resource "azurerm_firewall_policy_rule_collection_group" "rules" {
+  name               = "webserver"
+  firewall_policy_id = module.firewall.firewall_policy_id
+  priority           = 500
+
+  application_rule_collection {
+    name     = "AgwToServer"
+    priority = 129
+    action   = "Allow"
+
+    rule {
+      name             = "AllowWebServer"
+      source_addresses = [module.networks.subnet["hub"]["ApplicationGatewaySubnet"].address_prefix]
+      terminate_tls    = false
+      # todo make true
+
+      destination_fqdns = [
+        "firewall.jamesrcounts.com"
+      ]
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
 }
 
 // rule {
@@ -40,18 +78,3 @@ resource "azurerm_route" "agw_to_server" {
 //   }
 // }
 
-// rule {
-//   name             = "AllowWebServer"
-//   source_addresses = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
-//   terminate_tls    = false
-//   # todo make true
-
-//   destination_fqdns = [
-//     local.hostname_server
-//   ]
-
-//   protocols {
-//     port = 443
-//     type = "Https"
-//   }
-// }

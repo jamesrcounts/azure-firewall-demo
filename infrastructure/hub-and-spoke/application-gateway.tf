@@ -10,8 +10,9 @@ module "agw" {
   backend_addresses     = [module.networks.network_interface.private_ip_address]
   host_name             = "firewall.jamesrcounts.com"
   instance_id           = var.env_instance_id
-  subnet_id             = module.networks.subnet["hub"]["ApplicationGatewaySubnet"].id
-  tags                  = local.tags
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.main.id
+  subnet_id = module.networks.subnet["hub"]["ApplicationGatewaySubnet"].id
+  tags      = local.tags
 
   resource_groups = {
     env = data.azurerm_resource_group.rg

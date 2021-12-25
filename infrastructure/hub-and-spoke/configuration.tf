@@ -29,3 +29,10 @@ data "azurerm_key_vault_secret" "certificate" {
   key_vault_id = data.azurerm_key_vault.config.id
   name         = each.value
 }
+
+data "azurerm_log_analytics_workspace" "main" {
+  provider = azurerm.ops
+
+  name                = "la-${var.ops_instance_id}"
+  resource_group_name = data.azurerm_resource_group.ops.name
+}
