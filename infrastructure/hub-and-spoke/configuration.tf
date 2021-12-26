@@ -36,3 +36,10 @@ data "azurerm_log_analytics_workspace" "main" {
   name                = "la-${var.ops_instance_id}"
   resource_group_name = data.azurerm_resource_group.ops.name
 }
+
+data "azurerm_storage_account" "log_storage_account" {
+  provider = azurerm.ops
+
+  name                = "sa${replace(var.ops_instance_id, "-", "")}"
+  resource_group_name = data.azurerm_resource_group.ops.name
+}
