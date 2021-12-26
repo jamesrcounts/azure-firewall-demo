@@ -79,35 +79,33 @@ resource "azurerm_network_security_rule" "https" {
   network_security_group_name = azurerm_network_security_group.web.name
 }
 
-# TODO Enable once AGW is up
-// resource "azurerm_network_security_rule" "default_deny_in" {
-//   name                        = "default-deny-in"
-//   priority                    = 4096
-//   direction                   = "Inbound"
-//   access                      = "Deny"
-//   protocol                    = "*"
-//   source_port_range           = "*"
-//   destination_port_range      = "*"
-//   source_address_prefix       = "*"
-//   destination_address_prefix  = "*"
-//   resource_group_name         = var.resource_group.name
-//   network_security_group_name = azurerm_network_security_group.web.name
-// }
+resource "azurerm_network_security_rule" "default_deny_in" {
+  name                        = "default-deny-in"
+  priority                    = 4096
+  direction                   = "Inbound"
+  access                      = "Deny"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group.name
+  network_security_group_name = azurerm_network_security_group.web.name
+}
 
-# TODO Enable once firewall is up
-// resource "azurerm_network_security_rule" "default_deny_out" {
-//   name                        = "default-deny-out"
-//   priority                    = 4096
-//   direction                   = "Outbound"
-//   access                      = "Deny"
-//   protocol                    = "*"
-//   source_port_range           = "*"
-//   destination_port_range      = "*"
-//   source_address_prefix       = "*"
-//   destination_address_prefix  = "*"
-//   resource_group_name         = var.resource_group.name
-//   network_security_group_name = azurerm_network_security_group.web.name
-// }
+resource "azurerm_network_security_rule" "default_deny_out" {
+  name                        = "default-deny-out"
+  priority                    = 4096
+  direction                   = "Outbound"
+  access                      = "Deny"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group.name
+  network_security_group_name = azurerm_network_security_group.web.name
+}
 
 resource "azurerm_network_interface" "server" {
   location            = var.resource_group.location
