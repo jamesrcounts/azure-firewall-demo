@@ -230,6 +230,6 @@ module "diagnostics" {
 
   monitored_services = {
     fw    = azurerm_firewall.fw.id
-    pipfw = azurerm_public_ip.pip.id
+    pip = azurerm_public_ip.pip.id
   }
 }

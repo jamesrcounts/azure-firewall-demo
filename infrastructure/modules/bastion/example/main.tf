@@ -40,11 +40,20 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name = azurerm_virtual_network.net["hub"].name
 }
 
+resource "azurerm_log_analytics_workspace" "example" {
+  name                = "acctest-01"
+  location            = azurerm_resource_group.test.location
+  resource_group_name = azurerm_resource_group.test.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 module "test" {
   source = "../"
 
-  instance_id    = local.instance_id
-  resource_group = azurerm_resource_group.test
-  subnet_id      = azurerm_subnet.subnet["AzureBastionSubnet"].id
-  tags           = local.tags
+  instance_id                = local.instance_id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+  resource_group             = azurerm_resource_group.test
+  subnet_id                  = azurerm_subnet.subnet["AzureBastionSubnet"].id
+  tags                       = local.tags
 }

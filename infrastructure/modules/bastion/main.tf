@@ -19,3 +19,14 @@ resource "azurerm_bastion_host" "bh" {
     subnet_id            = var.subnet_id
   }
 }
+
+module "diagnostics" {
+  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.1"
+
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  monitored_services = {
+    bh  = azurerm_bastion_host.bh.id
+    pip = azurerm_public_ip.pip.id
+  }
+}

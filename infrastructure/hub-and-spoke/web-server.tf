@@ -1,6 +1,10 @@
 module "web_server" {
   source = "../modules/web-server"
 
+  depends_on = [
+    azurerm_firewall_policy_rule_collection_group.rules
+  ]
+
   instance_id          = var.env_instance_id
   network_interface_id = module.networks.network_interface.id
   resource_group       = data.azurerm_resource_group.rg
