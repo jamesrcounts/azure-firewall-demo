@@ -2,7 +2,7 @@ module "web_server" {
   source = "../modules/web-server"
 
   depends_on = [
-    azurerm_firewall_policy_rule_collection_group.rules
+    azurerm_firewall_policy_rule_collection_group.server_rules
   ]
 
   instance_id          = var.env_instance_id
