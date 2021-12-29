@@ -142,3 +142,7 @@ module "test" {
     ops = azurerm_resource_group.test
   }
 }
+
+output "ip_address" {
+  value = module.test.ip_address
+}
