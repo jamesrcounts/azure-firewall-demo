@@ -58,6 +58,17 @@ resource "azurerm_subnet" "server_subnet" {
   virtual_network_name = azurerm_virtual_network.net["server"].name
 }
 
+resource "azurerm_subnet" "worker_subnet" {
+  for_each = {
+    WorkerSubnet = 3
+  }
+
+  address_prefixes     = [cidrsubnet(azurerm_virtual_network.net["worker"].address_space.0, 2, each.value)]
+  name                 = each.key
+  resource_group_name  = var.resource_group.name
+  virtual_network_name = azurerm_virtual_network.net["worker"].name
+}
+
 resource "azurerm_network_security_group" "web" {
   name                = "nsg-web"
   location            = var.resource_group.location
@@ -145,6 +156,20 @@ resource "azurerm_network_interface" "server" {
     name                          = "ServerIPConfiguration"
     private_ip_address_allocation = "dynamic"
     subnet_id                     = azurerm_subnet.server_subnet["ServerSubnet"].id
+  }
+}
+
+resource "azurerm_network_interface" "worker" {
+  location            = var.resource_group.location
+  name                = "nic-worker-${var.instance_id}"
+  resource_group_name = var.resource_group.name
+  tags                = var.tags
+
+  ip_configuration {
+    name                          = "WorkerIPConfiguration"
+    private_ip_address            = "10.0.10.10"
+    private_ip_address_allocation = "Static"
+    subnet_id                     = azurerm_subnet.worker_subnet["WorkerSubnet"].id
   }
 }
 

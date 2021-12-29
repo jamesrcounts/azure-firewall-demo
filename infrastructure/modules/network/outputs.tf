@@ -1,8 +1,16 @@
-output "network_interface" {
+output "server_network_interface" {
   description = "A network interface in the server virtual network."
   value = {
     id                 = azurerm_network_interface.server.id
     private_ip_address = azurerm_network_interface.server.private_ip_address
+  }
+}
+
+output "worker_network_interface" {
+  description = "A network interface in the worker virtual network."
+  value = {
+    id                 = azurerm_network_interface.worker.id
+    private_ip_address = azurerm_network_interface.worker.private_ip_address
   }
 }
 
