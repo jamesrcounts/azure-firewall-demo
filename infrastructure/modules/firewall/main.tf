@@ -224,7 +224,7 @@ resource "azurerm_firewall" "fw" {
 }
 
 module "diagnostics" {
-  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.1"
+  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.2"
 
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
