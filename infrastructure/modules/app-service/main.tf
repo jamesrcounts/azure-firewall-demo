@@ -26,3 +26,13 @@ resource "azurerm_app_service" "webapp" {
     use_mercurial      = false
   }
 }
+
+module "diagnostics" {
+  source = "github.com/jamesrcounts/terraform-modules.git//diagnostics?ref=diagnostics-0.0.1"
+
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  monitored_services = {
+    app = azurerm_app_service.webapp.id
+  }
+}
