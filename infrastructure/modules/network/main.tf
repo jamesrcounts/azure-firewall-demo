@@ -66,45 +66,73 @@ resource "azurerm_network_security_group" "web" {
 }
 
 resource "azurerm_network_security_rule" "https" {
-  name                        = "HTTPS"
-  priority                    = 2048
-  direction                   = "Inbound"
   access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "443"
-  source_address_prefixes     = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes
   destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
+  destination_port_range      = "443"
+  direction                   = "Inbound"
+  name                        = "HTTPS"
   network_security_group_name = azurerm_network_security_group.web.name
+  priority                    = 2048
+  protocol                    = "Tcp"
+  resource_group_name         = var.resource_group.name
+  source_address_prefixes     = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes
+  source_port_range           = "*"
 }
 
 resource "azurerm_network_security_rule" "default_deny_in" {
-  name                        = "default-deny-in"
-  priority                    = 4096
-  direction                   = "Inbound"
   access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
+  destination_port_range      = "*"
+  direction                   = "Inbound"
+  name                        = "default-deny-in"
   network_security_group_name = azurerm_network_security_group.web.name
+  priority                    = 4096
+  protocol                    = "*"
+  resource_group_name         = var.resource_group.name
+  source_address_prefix       = "*"
+  source_port_range           = "*"
+}
+
+resource "azurerm_network_security_rule" "internet_out" {
+  access                      = "Allow"
+  destination_address_prefix  = "Internet"
+  destination_port_range      = "*"
+  direction                   = "Outbound"
+  name                        = "internet-out"
+  network_security_group_name = azurerm_network_security_group.web.name
+  priority                    = 2048
+  protocol                    = "Tcp"
+  resource_group_name         = var.resource_group.name
+  source_address_prefix       = "*"
+  source_port_range           = "*"
+}
+
+resource "azurerm_network_security_rule" "agw_out" {
+  access                       = "Allow"
+  destination_address_prefixes = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes
+  destination_port_range       = "*"
+  direction                    = "Outbound"
+  name                         = "agw-out"
+  network_security_group_name  = azurerm_network_security_group.web.name
+  priority                     = 2049
+  protocol                     = "Tcp"
+  resource_group_name          = var.resource_group.name
+  source_address_prefix        = "*"
+  source_port_range            = "*"
 }
 
 resource "azurerm_network_security_rule" "default_deny_out" {
-  name                        = "default-deny-out"
-  priority                    = 4096
-  direction                   = "Outbound"
   access                      = "Deny"
-  protocol                    = "*"
-  source_port_range           = "*"
+  destination_address_prefix  = "VirtualNetwork"
   destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
+  direction                   = "Outbound"
+  name                        = "default-deny-out"
   network_security_group_name = azurerm_network_security_group.web.name
+  priority                    = 4096
+  protocol                    = "*"
+  resource_group_name         = var.resource_group.name
+  source_address_prefix       = "*"
+  source_port_range           = "*"
 }
 
 resource "azurerm_network_interface" "server" {
@@ -121,8 +149,8 @@ resource "azurerm_network_interface" "server" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_to_server" {
-  subnet_id                 = azurerm_subnet.server_subnet["ServerSubnet"].id
   network_security_group_id = azurerm_network_security_group.web.id
+  subnet_id                 = azurerm_subnet.server_subnet["ServerSubnet"].id
 }
 
 resource "azurerm_route_table" "rt" {
