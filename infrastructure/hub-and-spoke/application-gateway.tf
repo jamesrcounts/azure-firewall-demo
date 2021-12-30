@@ -8,7 +8,7 @@ module "agw" {
 
   certificate_secret_id      = data.azurerm_key_vault_secret.certificate["pfx"].id
   backend_addresses          = [module.networks.server_network_interface.private_ip_address]
-  host_name                  = "firewall.jamesrcounts.com"
+  host_name                  = local.host_name
   instance_id                = var.env_instance_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.main.id
   subnet_id                  = module.networks.subnet["hub"]["ApplicationGatewaySubnet"].id

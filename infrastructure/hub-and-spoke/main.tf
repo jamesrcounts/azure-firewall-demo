@@ -1,5 +1,6 @@
 locals {
-  tags = data.azurerm_resource_group.rg.tags
+  host_name = "firewall.jamesrcounts.com"
+  tags      = data.azurerm_resource_group.rg.tags
 }
 
 resource "azurerm_route" "server_to_agw" {
