@@ -1,6 +1,6 @@
 locals {
   bootstrap_command = <<COMMAND
-  echo ${base64encode(var.ca_certificate)} > c:\root.pem.base64 && powershell "Set-Content -Path c:\root.pem -Value ([Text.Encoding]::UTF8.GetString([convert]::FromBase64String((Get-Content -Path c:\root.pem.base64))))" && certutil -addstore root c:\root.pem
+  echo ${var.ca_certificate} > c:\root.pem.base64 && powershell "Set-Content -Path c:\root.pem -Value ([Text.Encoding]::UTF8.GetString([convert]::FromBase64String((Get-Content -Path c:\root.pem.base64))))" && certutil -addstore root c:\root.pem
 COMMAND
 }
 

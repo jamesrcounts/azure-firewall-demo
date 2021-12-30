@@ -6,7 +6,7 @@ module "web_server" {
   ]
 
   instance_id          = var.env_instance_id
-  network_interface_id = module.networks.network_interface.id
+  network_interface_id = module.networks.server_network_interface.id
   resource_group       = data.azurerm_resource_group.rg
   tags                 = local.tags
 

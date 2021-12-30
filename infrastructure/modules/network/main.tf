@@ -167,7 +167,7 @@ resource "azurerm_network_interface" "worker" {
 
   ip_configuration {
     name                          = "WorkerIPConfiguration"
-    private_ip_address            = "10.0.10.10"
+    private_ip_address            = cidrhost(azurerm_subnet.worker_subnet["WorkerSubnet"].address_prefix, 10)
     private_ip_address_allocation = "Static"
     subnet_id                     = azurerm_subnet.worker_subnet["WorkerSubnet"].id
   }
@@ -182,6 +182,7 @@ resource "azurerm_route_table" "rt" {
   for_each = toset([
     "agw",
     "server",
+    "worker",
   ])
 
   disable_bgp_route_propagation = true
@@ -195,6 +196,7 @@ resource "azurerm_subnet_route_table_association" "rta" {
   for_each = {
     agw    = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].id
     server = azurerm_subnet.server_subnet["ServerSubnet"].id
+    worker = azurerm_subnet.worker_subnet["WorkerSubnet"].id
   }
 
   route_table_id = azurerm_route_table.rt[each.key].id

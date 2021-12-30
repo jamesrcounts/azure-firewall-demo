@@ -12,7 +12,7 @@ data "azurerm_resource_group" "ops" {
 data "azurerm_key_vault" "config" {
   provider = azurerm.ops
 
-  name                = "kv-${var.ops_instance_id}"
+  name                = "kv-cfg-${var.ops_instance_id}"
   resource_group_name = data.azurerm_resource_group.ops.name
 }
 
@@ -28,6 +28,11 @@ data "azurerm_key_vault_secret" "certificate" {
 
   key_vault_id = data.azurerm_key_vault.config.id
   name         = each.value
+}
+
+data "azurerm_key_vault_certificate_data" "rootca" {
+  key_vault_id = data.azurerm_key_vault.config.id
+  name         = "RootCA"
 }
 
 data "azurerm_log_analytics_workspace" "main" {
