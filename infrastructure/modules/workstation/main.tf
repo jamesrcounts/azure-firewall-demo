@@ -43,3 +43,117 @@ resource "azurerm_virtual_machine_extension" "bootstrap" {
     commandToExecute = local.bootstrap_command
   })
 }
+
+resource "azurerm_firewall_policy_rule_collection_group" "worker_rules" {
+  firewall_policy_id = var.firewall_policy_id
+  name               = "afwp-worker-${var.instance_id}"
+  priority           = 200
+
+  // priority 256
+  application_rule_collection {
+    action   = "Deny"
+    name     = "BlockPage"
+    priority = 256
+
+    rule {
+      name             = "BlockAzureEvents"
+      source_addresses = ["*"]
+      terminate_tls    = true
+      destination_urls = [
+        "azure.microsoft.com/en-us/community/events",
+        "azure.microsoft.com/en-us/community/events/*"
+      ]
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+
+  // priority 512
+  application_rule_collection {
+    action   = "Allow"
+    name     = "AllowWeb"
+    priority = 512
+
+    rule {
+      name             = "AllowAzure"
+      source_addresses = ["*"]
+      terminate_tls    = true
+      destination_fqdns = [
+        "*azure.com",
+        "*microsoft.com"
+      ]
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+
+    rule {
+      name             = "AllowNews"
+      source_addresses = ["*"]
+      terminate_tls    = true
+      web_categories = [
+        "business",
+        "webbasedemail"
+      ]
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+
+    rule {
+      name             = "AllowURL"
+      source_addresses = ["*"]
+      terminate_tls    = true
+
+      destination_urls = [
+        "www.nytimes.com/section/world",
+        "www.nytimes.com/section/world/*",
+        "www.nytimes.com/vi-assets/static-assets/*",
+        "static01.nyt.com/images/*"
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+
+  // priority 1024
+  application_rule_collection {
+    name     = "GeneralWeb"
+    priority = 1024
+    action   = "Allow"
+
+    rule {
+      name             = "AllowSports"
+      source_addresses = ["*"]
+      terminate_tls    = true
+      web_categories = [
+        "Sports"
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+}

@@ -75,10 +75,18 @@ resource "tls_self_signed_cert" "example" {
   ]
 }
 
+resource "azurerm_firewall_policy" "example" {
+  location            = azurerm_resource_group.test.location
+  name                = "example"
+  resource_group_name = azurerm_resource_group.test.name
+  sku                 = "Premium"
+}
+
 module "test" {
   source = "../"
 
   ca_certificate       = tls_self_signed_cert.example.cert_pem
+  firewall_policy_id   = azurerm_firewall_policy.example.id
   instance_id          = local.instance_id
   network_interface_id = azurerm_network_interface.server.id
   resource_group       = azurerm_resource_group.test
