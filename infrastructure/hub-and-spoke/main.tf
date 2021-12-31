@@ -21,14 +21,7 @@ resource "azurerm_route" "server_to_internet" {
   route_table_name       = module.networks.route_table["server"].name
 }
 
-resource "azurerm_route" "worker_to_internet" {
-  address_prefix         = "0.0.0.0/0"
-  name                   = "WorkerToInternet"
-  next_hop_in_ip_address = module.firewall.private_ip_address
-  next_hop_type          = "VirtualAppliance"
-  resource_group_name    = data.azurerm_resource_group.rg.name
-  route_table_name       = module.networks.route_table["worker"].name
-}
+
 
 
 
