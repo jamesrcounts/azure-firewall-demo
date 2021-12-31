@@ -146,19 +146,6 @@ resource "azurerm_network_security_rule" "default_deny_out" {
   source_port_range           = "*"
 }
 
-resource "azurerm_network_interface" "server" {
-  location            = var.resource_group.location
-  name                = "nic-server-${var.instance_id}"
-  resource_group_name = var.resource_group.name
-  tags                = var.tags
-
-  ip_configuration {
-    name                          = "ServerIPConfiguration"
-    private_ip_address_allocation = "dynamic"
-    subnet_id                     = azurerm_subnet.server_subnet["ServerSubnet"].id
-  }
-}
-
 resource "azurerm_network_interface" "worker" {
   location            = var.resource_group.location
   name                = "nic-worker-${var.instance_id}"

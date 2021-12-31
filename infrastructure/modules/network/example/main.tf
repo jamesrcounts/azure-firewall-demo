@@ -44,7 +44,6 @@ module "test" {
 
 output "network_interface_id" {
   value = {
-    server = module.test.server_network_interface.id
     worker = module.test.worker_network_interface.id
   }
 }
