@@ -146,19 +146,7 @@ resource "azurerm_network_security_rule" "default_deny_out" {
   source_port_range           = "*"
 }
 
-resource "azurerm_network_interface" "worker" {
-  location            = var.resource_group.location
-  name                = "nic-worker-${var.instance_id}"
-  resource_group_name = var.resource_group.name
-  tags                = var.tags
 
-  ip_configuration {
-    name                          = "WorkerIPConfiguration"
-    private_ip_address            = cidrhost(azurerm_subnet.worker_subnet["WorkerSubnet"].address_prefix, 10)
-    private_ip_address_allocation = "Static"
-    subnet_id                     = azurerm_subnet.worker_subnet["WorkerSubnet"].id
-  }
-}
 
 resource "azurerm_subnet_network_security_group_association" "nsg_to_server" {
   network_security_group_id = azurerm_network_security_group.web.id

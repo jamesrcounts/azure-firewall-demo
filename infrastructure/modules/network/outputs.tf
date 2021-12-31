@@ -1,11 +1,3 @@
-output "worker_network_interface" {
-  description = "A network interface in the worker virtual network."
-  value = {
-    id                 = azurerm_network_interface.worker.id
-    private_ip_address = azurerm_network_interface.worker.private_ip_address
-  }
-}
-
 output "route_table" {
   description = "A map of route table, indexed by name."
   value       = { for k, v in azurerm_route_table.rt : k => { name = v.name } }
@@ -22,6 +14,12 @@ output "subnet" {
     }
     server = {
       for k, v in azurerm_subnet.server_subnet : k => {
+        id             = v.id
+        address_prefix = v.address_prefix
+      }
+    }
+    worker = {
+            for k, v in azurerm_subnet.worker_subnet : k => {
         id             = v.id
         address_prefix = v.address_prefix
       }
