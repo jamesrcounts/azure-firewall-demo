@@ -13,9 +13,12 @@ variable "instance_id" {
   type        = string
 }
 
-variable "network_interface_id" {
-  description = "A Network Interface ID which should be attached to this Virtual Machine."
-  type        = string
+variable "subnet" {
+  description = "(Required) The subnet where this server's Network Interface should be located in."
+  type = object({
+    id             = string
+    address_prefix = string
+  })
 }
 
 variable "resource_group" {

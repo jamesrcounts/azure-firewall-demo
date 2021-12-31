@@ -4,6 +4,20 @@ locals {
 COMMAND
 }
 
+resource "azurerm_network_interface" "worker" {
+  location            = var.resource_group.location
+  name                = "nic-worker-${var.instance_id}"
+  resource_group_name = var.resource_group.name
+  tags                = var.tags
+
+  ip_configuration {
+    name                          = "WorkerIPConfiguration"
+    private_ip_address            = cidrhost(var.subnet.address_prefix, 10)
+    private_ip_address_allocation = "Static"
+    subnet_id                     = var.subnet.id
+  }
+}
+
 resource "azurerm_windows_virtual_machine" "worker" {
   name                = "vm-worker-${var.instance_id}"
   computer_name       = "WorkerVM"
@@ -13,9 +27,7 @@ resource "azurerm_windows_virtual_machine" "worker" {
   size                = "Standard_B2s"
   admin_username      = "adminuser"
   admin_password      = "P@$$w0rd1234!"
-  network_interface_ids = [
-    var.network_interface_id,
-  ]
+  network_interface_ids = [    azurerm_network_interface.worker.id  ]
 
   os_disk {
     caching              = "ReadWrite"
