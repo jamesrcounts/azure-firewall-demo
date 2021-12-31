@@ -39,6 +39,11 @@ module "test" {
   route_table = azurerm_route_table.rt
 
   subnet = {
+    hub = {
+      ApplicationGatewaySubnet = {
+        address_prefix = cidrsubnet("10.0.0.0/16", 4, 1)
+      }
+    }
     server = {
       ServerSubnet = {
         address_prefix = cidrsubnet("10.0.0.0/16", 2, 1)

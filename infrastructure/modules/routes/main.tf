@@ -19,3 +19,21 @@ resource "azurerm_route" "worker_to_internet" {
   resource_group_name    = var.resource_group.name
   route_table_name       = var.route_table["worker"].name
 }
+
+resource "azurerm_route" "server_to_internet" {
+  address_prefix         = local.internet_prefix
+  name                   = "ServerToInternet"
+  next_hop_in_ip_address = var.firewall_ip_address
+  next_hop_type          = "VirtualAppliance"
+  resource_group_name    = var.resource_group.name
+  route_table_name       = var.route_table["server"].name
+}
+
+resource "azurerm_route" "server_to_agw" {
+  address_prefix         = var.subnet["hub"]["ApplicationGatewaySubnet"].address_prefix
+  name                   = "ServerToAgw"
+  next_hop_in_ip_address = var.firewall_ip_address
+  next_hop_type          = "VirtualAppliance"
+  resource_group_name    = var.resource_group.name
+  route_table_name       = var.route_table["server"].name
+}
