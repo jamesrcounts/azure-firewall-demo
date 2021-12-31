@@ -9,6 +9,19 @@ locals {
   )
 }
 
+resource "azurerm_network_interface" "server" {
+  location            = var.resource_group.location
+  name                = "nic-server-${var.instance_id}"
+  resource_group_name = var.resource_group.name
+  tags                = var.tags
+
+  ip_configuration {
+    name                          = "ServerIPConfiguration"
+    private_ip_address_allocation = "dynamic"
+    subnet_id                     = var.subnet.id
+  }
+}
+
 resource "azurerm_linux_virtual_machine" "server" {
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
@@ -17,7 +30,7 @@ resource "azurerm_linux_virtual_machine" "server" {
   disable_password_authentication = false
   location                        = var.resource_group.location
   name                            = "vm-server-${var.instance_id}"
-  network_interface_ids           = [var.network_interface_id]
+  network_interface_ids           = [azurerm_network_interface.server.id]
   resource_group_name             = var.resource_group.name
   size                            = "Standard_B2s"
   tags                            = var.tags
@@ -34,4 +47,45 @@ resource "azurerm_linux_virtual_machine" "server" {
     sku       = "16.04.0-LTS"
     version   = "latest"
   }
+}
+
+resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
+  firewall_policy_id = var.firewall_policy_id
+  name               = "webserver"
+  priority           = 500
+
+  network_rule_collection {
+    action   = "Allow"
+    name     = "AgwToServer"
+    priority = 400
+
+    rule {
+      name                  = "AllowWebServer"
+      protocols             = ["TCP", "UDP"]
+      source_addresses      = var.allowed_source_addresses
+      destination_addresses = [var.subnet.address_prefix]
+      destination_ports     = ["443"]
+    }
+  }
+
+  // application_rule_collection {
+  //   name     = ""
+  //   priority = 129
+  //   action   = "Allow"
+
+  //   rule {
+  //     name             = ""
+  //     terminate_tls    = false
+  //     # todo make true
+
+  //     destination_fqdns = [
+  //       "firewall.jamesrcounts.com"
+  //     ]
+
+  //     protocols {
+  //       port = 443
+  //       type = "Https"
+  //     }
+  //   }
+  // }
 }

@@ -1,19 +1,6 @@
-variable "resource_group" {
-  description = "The resource group to deploy the networks into."
-  type = object({
-    name     = string
-    location = string
-  })
-}
-
-variable "tags" {
-  description = "Tags to apply to all resources."
-  type        = map(string)
-}
-
-variable "instance_id" {
-  description = "ID to use when generating names."
-  type        = string
+variable "allowed_source_addresses" {
+  description = "(Required) Specifies a list of source IP addresses (including CIDR and *) that are allowed to communicate with this server."
+  type        = list(string)
 }
 
 variable "certificate" {
@@ -25,7 +12,33 @@ variable "certificate" {
   })
 }
 
-variable "network_interface_id" {
-  description = "A Network Interface ID which should be attached to this Virtual Machine."
+variable "firewall_policy_id" {
+  description = "The ID of the Firewall Policy where the Firewall Policy Rule Collection Group should exist."
   type        = string
+}
+
+variable "instance_id" {
+  description = "ID to use when generating names."
+  type        = string
+}
+
+variable "resource_group" {
+  description = "The resource group to deploy the networks into."
+  type = object({
+    name     = string
+    location = string
+  })
+}
+
+variable "subnet" {
+  description = "(Required) The subnet where this server's Network Interface should be located in."
+  type = object({
+    id             = string
+    address_prefix = string
+  })
+}
+
+variable "tags" {
+  description = "Tags to apply to all resources."
+  type        = map(string)
 }

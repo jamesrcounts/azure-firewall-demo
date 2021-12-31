@@ -40,45 +40,7 @@ resource "azurerm_route" "agw_to_server" {
 }
 
 
-resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
-  name               = "webserver"
-  firewall_policy_id = module.firewall.firewall_policy_id
-  priority           = 500
 
-  network_rule_collection {
-    name     = "AgwToServer"
-    priority = 400
-    action   = "Allow"
-    rule {
-      name                  = "AllowWebServer"
-      protocols             = ["TCP", "UDP"]
-      source_addresses      = [module.networks.subnet["hub"]["ApplicationGatewaySubnet"].address_prefix]
-      destination_addresses = [module.networks.subnet["server"]["ServerSubnet"].address_prefix]
-      destination_ports     = ["443"]
-    }
-  }
-
-  // application_rule_collection {
-  //   name     = ""
-  //   priority = 129
-  //   action   = "Allow"
-
-  //   rule {
-  //     name             = ""
-  //     terminate_tls    = false
-  //     # todo make true
-
-  //     destination_fqdns = [
-  //       "firewall.jamesrcounts.com"
-  //     ]
-
-  //     protocols {
-  //       port = 443
-  //       type = "Https"
-  //     }
-  //   }
-  // }
-}
 
 
 
