@@ -36,3 +36,35 @@ module "diagnostics" {
     app = azurerm_app_service.webapp.id
   }
 }
+
+resource "azurerm_firewall_policy_rule_collection_group" "appservice_rules" {
+  name               = "appservice"
+  firewall_policy_id = var.firewall_policy_id
+  priority           = 501
+
+  application_rule_collection {
+    action   = "Allow"
+    name     = "AllowAppService"
+    priority = 512
+
+    rule {
+      name             = "AllowAppService"
+      source_addresses = ["*"]
+      terminate_tls    = true
+
+      destination_fqdns = [
+        azurerm_app_service.webapp.default_site_hostname
+      ]
+
+      protocols {
+        port = 80
+        type = "Http"
+      }
+
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
+}

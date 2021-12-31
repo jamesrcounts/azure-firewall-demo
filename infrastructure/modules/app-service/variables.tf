@@ -1,3 +1,8 @@
+variable "firewall_policy_id" {
+  description = "The ID of the Firewall Policy where the Firewall Policy Rule Collection Group should exist."
+  type        = string
+}
+
 variable "instance_id" {
   description = "ID to use when generating names."
   type        = string
