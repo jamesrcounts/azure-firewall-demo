@@ -40,19 +40,6 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name = azurerm_virtual_network.net["server"].name
 }
 
-// resource "azurerm_network_interface" "server" {
-//   location            = azurerm_resource_group.test.location
-//   name                = "nic-server-${local.instance_id}"
-//   resource_group_name = azurerm_resource_group.test.name
-//   tags                = local.tags
-
-//   ip_configuration {
-//     name                          = "ServerIPConfiguration"
-//     private_ip_address_allocation = "dynamic"
-//     subnet_id                     = azurerm_subnet.subnet["ServerSubnet"].id
-//   }
-// }
-
 resource "tls_private_key" "example" {
   algorithm   = "ECDSA"
   ecdsa_curve = "P384"

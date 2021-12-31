@@ -51,7 +51,7 @@ resource "azurerm_linux_virtual_machine" "server" {
 
 resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
   firewall_policy_id = var.firewall_policy_id
-  name               = "webserver"
+  name               = "afwp-server-${var.instance_id}"
   priority           = 500
 
   network_rule_collection {
@@ -68,6 +68,38 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     }
   }
 
+  // priority 512
+  application_rule_collection {
+    action   = "Allow"
+    name     = "AllowWeb"
+    priority = 512
+
+    rule {
+      name             = "AllowOSUpdates"
+      source_addresses = ["*"]
+      destination_fqdns = [
+        "api.snapcraft.io",
+        "azure.archive.ubuntu.com",
+        "changelogs.ubuntu.com",
+        "download.opensuse.org",
+        "motd.ubuntu.com",
+        "packages.microsoft.com",
+        "security.ubuntu.com",
+        "snapcraft.io",
+      ]
+
+      protocols {
+        type = "Http"
+        port = 80
+      }
+      protocols {
+        type = "Https"
+        port = 443
+      }
+    }
+  }
+
+  # TODO: can this work? Deal with SNAT
   // application_rule_collection {
   //   name     = ""
   //   priority = 129
