@@ -19,6 +19,7 @@ data "azurerm_key_vault_secret" "import" {
   provider = azurerm.ops
 
   for_each = toset([
+    "firewall-jamesrcounts-com",
     "firewall-jamesrcounts-com-cert",
     "firewall-jamesrcounts-com-key",
     "firewall-policy-id",
@@ -34,12 +35,12 @@ data "azurerm_key_vault_certificate_data" "rootca" {
   name         = "RootCA"
 }
 
-// data "azurerm_log_analytics_workspace" "main" {
-//   provider = azurerm.ops
+data "azurerm_log_analytics_workspace" "main" {
+  provider = azurerm.ops
 
-//   name                = "la-${var.ops_instance_id}"
-//   resource_group_name = data.azurerm_resource_group.ops.name
-// }
+  name                = "la-${var.ops_instance_id}"
+  resource_group_name = data.azurerm_resource_group.ops.name
+}
 
 // data "azurerm_storage_account" "log_storage_account" {
 //   provider = azurerm.ops
