@@ -23,6 +23,10 @@ resource "azurerm_network_interface" "server" {
 }
 
 resource "azurerm_linux_virtual_machine" "server" {
+  depends_on=[
+    azurerm_firewall_policy_rule_collection_group.server_rules
+  ]
+  
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
   computer_name                   = "ServerVM"
