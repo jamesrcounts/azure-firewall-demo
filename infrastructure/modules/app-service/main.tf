@@ -38,7 +38,7 @@ module "diagnostics" {
 }
 
 resource "azurerm_firewall_policy_rule_collection_group" "appservice_rules" {
-  name               = "appservice"
+  name               = "afwp-appservice-${var.instance_id}"
   firewall_policy_id = var.firewall_policy_id
   priority           = 501
 
