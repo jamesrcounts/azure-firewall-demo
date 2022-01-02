@@ -6,6 +6,7 @@ module "agw" {
     azurerm.ops = azurerm.ops
   }
 
+  ca_certificate             = local.ca_certificate
   certificate_secret_id      = data.azurerm_key_vault_secret.import["firewall-jamesrcounts-com"].id
   backend_addresses          = [module.web_server.network_interface.private_ip_address]
   host_name                  = local.host_name

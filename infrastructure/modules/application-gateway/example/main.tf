@@ -4,6 +4,7 @@ provider "azurerm" {
 
 locals {
   instance_id = "bleep-bloop"
+  host_name   = "bleep.contoso.com"
 
   tags = {
     mytag       = "value"
@@ -121,6 +122,29 @@ resource "azurerm_log_analytics_workspace" "example" {
   retention_in_days   = 30
 }
 
+resource "tls_private_key" "root_ca" {
+  algorithm = "RSA"
+  rsa_bits  = "4096"
+}
+
+resource "tls_self_signed_cert" "root_ca" {
+  key_algorithm         = tls_private_key.root_ca.algorithm
+  dns_names             = [local.host_name]
+  private_key_pem       = tls_private_key.root_ca.private_key_pem
+  validity_period_hours = 24
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+
+  subject {
+    common_name  = local.host_name
+    organization = "Contoso Inc."
+  }
+}
+
 module "test" {
   source = "../"
 
@@ -129,6 +153,7 @@ module "test" {
     azurerm.ops = azurerm
   }
 
+  ca_certificate             = tls_self_signed_cert.root_ca.cert_pem
   certificate_secret_id      = azurerm_key_vault_certificate.example.secret_id
   backend_addresses          = ["192.168.0.1"]
   host_name                  = "test.contoso.com"

@@ -3,7 +3,7 @@ module "workstation" {
 
   depends_on = [module.app_service]
 
-  ca_certificate     = nonsensitive(data.azurerm_key_vault_secret.import["RootCA"].value)
+  ca_certificate     = local.ca_certificate
   firewall_policy_id = local.firewall_policy_id
   instance_id        = var.env_instance_id
   subnet             = local.subnet["worker"]["WorkerSubnet"]

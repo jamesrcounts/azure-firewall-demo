@@ -3,6 +3,11 @@ variable "backend_addresses" {
   type        = list(string)
 }
 
+variable "ca_certificate" {
+  description = "Trusted root CA certificate."
+  type        = string
+}
+
 variable "host_name" {
   description = "The hostname to use for listeners and backend probes."
   type        = string

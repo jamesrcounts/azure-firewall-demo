@@ -149,6 +149,11 @@ resource "azurerm_application_gateway" "agw" {
     policy_name = "AppGwSslPolicy20170401S"
   }
 
+  trusted_root_certificate {
+    name = "RootCA"
+    data = base64encode(var.ca_certificate)
+  }
+
   waf_configuration {
     enabled          = true
     firewall_mode    = "Prevention"
