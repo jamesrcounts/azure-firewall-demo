@@ -3,6 +3,7 @@ resource "azurerm_key_vault_secret" "export" {
 
   for_each = {
     "firewall-policy-id" = module.firewall.firewall_policy_id
+    "firewall-public-ip" = module.firewall.public_ip_address
     "subnet"             = jsonencode(module.networks.subnet)
   }
 

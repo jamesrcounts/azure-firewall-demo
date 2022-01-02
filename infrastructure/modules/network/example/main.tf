@@ -42,12 +42,6 @@ module "test" {
   log_storage_account_id  = azurerm_storage_account.example.id
 }
 
-output "network_interface_id" {
-  value = {
-    worker = module.test.worker_network_interface.id
-  }
-}
-
 output "bastion_subnet_id" {
   value = module.test.subnet["hub"]["AzureBastionSubnet"].id
 }

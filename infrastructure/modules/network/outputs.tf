@@ -19,7 +19,7 @@ output "subnet" {
       }
     }
     worker = {
-            for k, v in azurerm_subnet.worker_subnet : k => {
+      for k, v in azurerm_subnet.worker_subnet : k => {
         id             = v.id
         address_prefix = v.address_prefix
       }

@@ -23,6 +23,7 @@ data "azurerm_key_vault_secret" "import" {
     "firewall-jamesrcounts-com-cert",
     "firewall-jamesrcounts-com-key",
     "firewall-policy-id",
+    "firewall-public-ip",
     "subnet",
     "RootCA",
   ])
