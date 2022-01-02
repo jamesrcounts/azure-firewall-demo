@@ -19,6 +19,8 @@ resource "azurerm_network_interface" "worker" {
 }
 
 resource "azurerm_windows_virtual_machine" "worker" {
+  depends_on = [azurerm_firewall_policy_rule_collection_group.worker_rules]
+  
   name                = "vm-worker-${var.instance_id}"
   computer_name       = "WorkerVM"
   location            = var.resource_group.location

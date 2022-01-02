@@ -1,20 +1,24 @@
 resource "azurerm_user_assigned_identity" "afwp" {
-  location            = var.resource_group.location
+  location            = var.resource_groups["env"].location
   name                = "uai-afwp-${var.instance_id}"
-  resource_group_name = var.resource_group.name
+  resource_group_name = var.resource_groups["env"].name
   tags                = var.tags
 }
 
 resource "azurerm_role_assignment" "keyvault_certificate_officer" {
-  scope                = var.resource_group.id
-  role_definition_name = "Key Vault Certificates Officer"
+  provider = azurerm.ops
+
   principal_id         = azurerm_user_assigned_identity.afwp.principal_id
+  role_definition_name = "Key Vault Certificates Officer"
+  scope                = var.resource_groups["ops"].id
 }
 
 resource "azurerm_role_assignment" "keyvault_secret_user" {
-  scope                = var.resource_group.id
-  role_definition_name = "Key Vault Secrets User"
+  provider = azurerm.ops
+
   principal_id         = azurerm_user_assigned_identity.afwp.principal_id
+  role_definition_name = "Key Vault Secrets User"
+  scope                = var.resource_groups["ops"].id
 }
 
 resource "azurerm_firewall_policy" "afwp" {
@@ -23,9 +27,9 @@ resource "azurerm_firewall_policy" "afwp" {
     azurerm_role_assignment.keyvault_secret_user
   ]
 
-  location            = var.resource_group.location
+  location            = var.resource_groups["env"].location
   name                = "afwp-${var.instance_id}"
-  resource_group_name = var.resource_group.name
+  resource_group_name = var.resource_groups["env"].name
   sku                 = "Premium"
   tags                = var.tags
 
@@ -64,18 +68,18 @@ resource "azurerm_firewall_policy" "afwp" {
 
 resource "azurerm_public_ip" "pip" {
   allocation_method   = "Static"
-  location            = var.resource_group.location
+  location            = var.resource_groups["env"].location
   name                = "pip-afw-${var.instance_id}"
-  resource_group_name = var.resource_group.name
+  resource_group_name = var.resource_groups["env"].name
   sku                 = "Standard"
   tags                = var.tags
 }
 
 resource "azurerm_firewall" "fw" {
   firewall_policy_id  = azurerm_firewall_policy.afwp.id
-  location            = var.resource_group.location
+  location            = var.resource_groups["env"].location
   name                = "fw-${var.instance_id}"
-  resource_group_name = var.resource_group.name
+  resource_group_name = var.resource_groups["env"].name
   sku_name            = "AZFW_VNet"
   sku_tier            = "Premium"
   tags                = var.tags

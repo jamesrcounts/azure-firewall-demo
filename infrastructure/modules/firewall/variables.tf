@@ -13,13 +13,13 @@ variable "log_analytics_workspace_id" {
   type        = string
 }
 
-variable "resource_group" {
+variable "resource_groups" {
   description = "The resource group to deploy the networks into."
-  type = object({
+  type = map(object({
     id       = string
-    name     = string
     location = string
-  })
+    name     = string
+  }))
 }
 
 variable "subnet_id" {
