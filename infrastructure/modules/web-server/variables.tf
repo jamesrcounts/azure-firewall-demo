@@ -42,3 +42,8 @@ variable "tags" {
   description = "Tags to apply to all resources."
   type        = map(string)
 }
+
+variable "zone_name" {
+  description = "(Required) The DNS zone name."
+  type        = string
+}

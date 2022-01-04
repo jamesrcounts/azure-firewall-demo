@@ -207,6 +207,7 @@ resource "azurerm_network_watcher_flow_log" "web_network_logs" {
 resource "azurerm_private_dns_zone" "zone" {
   name                = var.zone_name
   resource_group_name = var.resource_group.name
+  tags                = var.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "zone_links" {
@@ -216,4 +217,5 @@ resource "azurerm_private_dns_zone_virtual_network_link" "zone_links" {
   resource_group_name   = var.resource_group.name
   private_dns_zone_name = azurerm_private_dns_zone.zone.name
   virtual_network_id    = each.value.id
+  tags                  = var.tags
 }

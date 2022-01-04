@@ -7,6 +7,7 @@ module "web_server" {
   resource_group           = data.azurerm_resource_group.rg
   subnet                   = local.subnet["server"]["ServerSubnet"]
   tags                     = local.tags
+  zone_name                = data.azurerm_private_dns_zone.zone.name
 
   certificate = {
     cert_pem        = data.azurerm_key_vault_secret.import["firewall-jamesrcounts-com-cert"].value
