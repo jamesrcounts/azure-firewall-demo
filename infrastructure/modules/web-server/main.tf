@@ -66,19 +66,19 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
   name               = "afwp-server-${var.instance_id}"
   priority           = 500
 
-  network_rule_collection {
-    action   = "Allow"
-    name     = "AgwToServer"
-    priority = 400
+  // network_rule_collection {
+  //   action   = "Allow"
+  //   name     = "AgwToServer"
+  //   priority = 400
 
-    rule {
-      name                  = "AllowWebServer"
-      protocols             = ["TCP", "UDP"]
-      source_addresses      = var.allowed_source_addresses
-      destination_addresses = [var.subnet.address_prefix]
-      destination_ports     = ["443"]
-    }
-  }
+  //   rule {
+  //     name                  = "AllowWebServer"
+  //     protocols             = ["TCP", "UDP"]
+  //     source_addresses      = var.allowed_source_addresses
+  //     destination_addresses = [var.subnet.address_prefix]
+  //     destination_ports     = ["443"]
+  //   }
+  // }
 
   // priority 512
   application_rule_collection {
@@ -111,25 +111,26 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     }
   }
 
-  # TODO: can this work? Deal with SNAT
-  // application_rule_collection {
-  //   name     = ""
-  //   priority = 129
-  //   action   = "Allow"
+  # TODO: works, next terminate tls and test whether AGW needs to be an allowed source in firewall/nsg
+  application_rule_collection {
+    action   = "Allow"
+    name     = "AgwToServer"
+    priority = 129
 
-  //   rule {
-  //     name             = ""
-  //     terminate_tls    = false
-  //     # todo make true
+    rule {
+      name             = "AllowWebServer"
+      source_addresses = var.allowed_source_addresses
+      terminate_tls    = false
+      # todo make true
 
-  //     destination_fqdns = [
-  //       "firewall.jamesrcounts.com"
-  //     ]
+      destination_fqdns = [
+        "firewall.jamesrcounts.com"
+      ]
 
-  //     protocols {
-  //       port = 443
-  //       type = "Https"
-  //     }
-  //   }
-  // }
+      protocols {
+        port = 443
+        type = "Https"
+      }
+    }
+  }
 }
