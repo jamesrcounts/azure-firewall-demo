@@ -34,6 +34,10 @@ data "azurerm_key_vault_certificate_data" "rootca" {
   name         = "RootCA"
 }
 
+data "azurerm_client_config" "ops" {
+  provider = azurerm.ops
+}
+
 data "azurerm_log_analytics_workspace" "main" {
   provider = azurerm.ops
 

@@ -8,9 +8,14 @@ variable "instance_id" {
   type        = string
 }
 
-variable "log_analytics_workspace_id" {
+variable "log_analytics_workspace" {
   description = "The workspace to write logs into."
-  type        = string
+  type = object({
+    id                  = string
+    resource_group_name = string
+    subscription_id     = string
+    name                = string
+  })
 }
 
 variable "resource_groups" {

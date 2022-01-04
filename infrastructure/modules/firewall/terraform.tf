@@ -3,8 +3,8 @@ terraform {
 
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 2"
+      source                = "hashicorp/azurerm"
+      version               = "~> 2"
       configuration_aliases = [azurerm.ops]
     }
   }
