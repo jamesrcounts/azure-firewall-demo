@@ -29,3 +29,8 @@ variable "log_storage_account_id" {
   description = "The storage account to write flow logs into."
   type        = string
 }
+
+variable "zone_name" {
+  description = "(Required) The DNS zone name."
+  type        = string
+}

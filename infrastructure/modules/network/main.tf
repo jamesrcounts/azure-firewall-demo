@@ -146,8 +146,6 @@ resource "azurerm_network_security_rule" "default_deny_out" {
   source_port_range           = "*"
 }
 
-
-
 resource "azurerm_subnet_network_security_group_association" "nsg_to_server" {
   network_security_group_id = azurerm_network_security_group.web.id
   subnet_id                 = azurerm_subnet.server_subnet["ServerSubnet"].id
@@ -204,4 +202,18 @@ resource "azurerm_network_watcher_flow_log" "web_network_logs" {
     workspace_region      = var.log_analytics_workspace.location
     workspace_resource_id = var.log_analytics_workspace.id
   }
+}
+
+resource "azurerm_private_dns_zone" "zone" {
+  name                = var.zone_name
+  resource_group_name = var.resource_group.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "zone_links" {
+  for_each = azurerm_virtual_network.net
+
+  name                  = "pdzl-${each.key}-${var.instance_id}"
+  resource_group_name   = var.resource_group.name
+  private_dns_zone_name = azurerm_private_dns_zone.zone.name
+  virtual_network_id    = each.value.id
 }

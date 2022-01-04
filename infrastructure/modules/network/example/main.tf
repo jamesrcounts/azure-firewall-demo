@@ -40,6 +40,7 @@ module "test" {
   instance_id             = azurerm_resource_group.test.tags["instance_id"]
   log_analytics_workspace = azurerm_log_analytics_workspace.example
   log_storage_account_id  = azurerm_storage_account.example.id
+  zone_name               = "jamesrcounts.com"
 }
 
 output "bastion_subnet_id" {
