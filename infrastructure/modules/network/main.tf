@@ -89,7 +89,7 @@ resource "azurerm_network_security_rule" "https" {
   source_port_range           = "*"
   
   source_address_prefixes     = concat(
-    azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes,
+    # azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes,
     azurerm_subnet.hub_subnet["AzureFirewallSubnet"].address_prefixes,
   )
 }
