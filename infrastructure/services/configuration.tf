@@ -19,13 +19,14 @@ data "azurerm_key_vault_secret" "import" {
   provider = azurerm.ops
 
   for_each = toset([
+    "RootCA",
     "firewall-jamesrcounts-com",
     "firewall-jamesrcounts-com-cert",
     "firewall-jamesrcounts-com-key",
     "firewall-policy-id",
     "firewall-public-ip",
+    "nsg",
     "subnet",
-    "RootCA",
   ])
 
   key_vault_id = data.azurerm_key_vault.config.id

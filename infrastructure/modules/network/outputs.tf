@@ -1,3 +1,12 @@
+output "nsg" {
+  description = "A map of network security group, indexed by name."
+  value = {
+    server = {
+      name = azurerm_network_security_group.web.name
+    }
+  }
+}
+
 output "route_table" {
   description = "A map of route table, indexed by name."
   value       = { for k, v in azurerm_route_table.rt : k => { name = v.name } }
