@@ -1,8 +1,9 @@
 locals {
   agw_name                       = "agw-${var.instance_id}"
-  frontend_ip_configuration_name = "public"
   backend_address_pool_name      = "private"
+  frontend_ip_configuration_name = "public"
   ssl_certificate_name           = "ssl"
+  trusted_root_certificate_name = "RootCA"
 }
 
 resource "azurerm_user_assigned_identity" "agw" {
@@ -52,12 +53,14 @@ resource "azurerm_application_gateway" "agw" {
 
   backend_http_settings {
     cookie_based_affinity = "Disabled"
+    host_name = var.host_name
     name                  = "https"
     path                  = "/"
     port                  = 443
     probe_name            = "https"
     protocol              = "Https"
     request_timeout       = 180
+    trusted_root_certificate_names=[local.trusted_root_certificate_name]
   }
 
   frontend_ip_configuration {
@@ -150,7 +153,7 @@ resource "azurerm_application_gateway" "agw" {
   }
 
   trusted_root_certificate {
-    name = "RootCA"
+    name = local.trusted_root_certificate_name
     data = base64encode(var.ca_certificate)
   }
 
