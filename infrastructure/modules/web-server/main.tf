@@ -99,7 +99,6 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     }
   }
 
-  # TODO: AGW needs to be an allowed source in firewall; firewall needs to be allowed source in nsg
   application_rule_collection {
     action   = "Allow"
     name     = "AgwToServer"
@@ -107,7 +106,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
 
     rule {
       name             = "AllowWebServer"
-      source_addresses = concat(var.application_gateway_subnet_cidrs, var.azure_firewall_subnet_cidrs)
+      source_addresses = var.application_gateway_subnet_cidrs
       terminate_tls    = true
 
       destination_fqdns = [
