@@ -28,6 +28,7 @@ resource "azurerm_private_dns_a_record" "server" {
   resource_group_name = var.resource_group.name
   ttl                 = 300
   records             = [azurerm_network_interface.server.private_ip_address]
+  tags=var.tags
 }
 
 resource "azurerm_linux_virtual_machine" "server" {
