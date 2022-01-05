@@ -32,6 +32,7 @@ resource "azurerm_subnet" "subnet" {
   for_each = {
     ServerSubnet             = cidrsubnet(azurerm_virtual_network.net["server"].address_space.0, 2, 0)
     ApplicationGatewaySubnet = cidrsubnet(azurerm_virtual_network.net["server"].address_space.0, 2, 1)
+    AzureFirewallSubnet      = cidrsubnet(azurerm_virtual_network.net["server"].address_space.0, 2, 2)
   }
 
   address_prefixes     = [each.value]
@@ -70,15 +71,31 @@ resource "azurerm_firewall_policy" "example" {
   sku                 = "Premium"
 }
 
+resource "azurerm_private_dns_zone" "zone" {
+  name                = "example.com"
+  resource_group_name = azurerm_resource_group.test.name
+  tags                = local.tags
+}
+
+resource "azurerm_network_security_group" "web" {
+  name                = "nsg-web"
+  location            = azurerm_resource_group.test.location
+  resource_group_name = azurerm_resource_group.test.name
+  tags                = local.tags
+}
+
 module "test" {
   source = "../"
 
-  allowed_source_addresses = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
-  firewall_policy_id       = azurerm_firewall_policy.example.id
-  instance_id              = local.instance_id
-  resource_group           = azurerm_resource_group.test
-  subnet                   = azurerm_subnet.subnet["ServerSubnet"]
-  tags                     = local.tags
+  azure_firewall_subnet_cidrs = azurerm_subnet.subnet["AzureFirewallSubnet"].address_prefixes
+  allowed_source_addresses    = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
+  firewall_policy_id          = azurerm_firewall_policy.example.id
+  instance_id                 = local.instance_id
+  resource_group              = azurerm_resource_group.test
+  subnet                      = azurerm_subnet.subnet["ServerSubnet"]
+  tags                        = local.tags
+  zone_name                   = azurerm_private_dns_zone.zone.name
+  nsg_name                    = azurerm_network_security_group.web.name
 
   certificate = {
     cert_pem        = tls_self_signed_cert.example.cert_pem

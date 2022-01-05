@@ -28,14 +28,14 @@ resource "azurerm_private_dns_a_record" "server" {
   resource_group_name = var.resource_group.name
   ttl                 = 300
   records             = [azurerm_network_interface.server.private_ip_address]
-  tags=var.tags
+  tags                = var.tags
 }
 
 resource "azurerm_linux_virtual_machine" "server" {
-  depends_on=[
+  depends_on = [
     azurerm_firewall_policy_rule_collection_group.server_rules
   ]
-  
+
   admin_password                  = "Password1234!"
   admin_username                  = "plankton"
   computer_name                   = "ServerVM"
@@ -112,7 +112,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     }
   }
 
-  # TODO: works, next test whether AGW needs to be an allowed source in firewall/nsg
+  # TODO: AGW needs to be an allowed source in firewall; firewall needs to be allowed source in nsg
   application_rule_collection {
     action   = "Allow"
     name     = "AgwToServer"
@@ -133,4 +133,23 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
       }
     }
   }
+}
+
+# When using application rules the firewall will SNAT even private traffic,
+# making the source IP all appear to come from the firewall.  If using network
+# rules, no SNAT occurs for private traffic, and the NSG would need to allow 
+# the Application Gateway subnet instead.
+resource "azurerm_network_security_rule" "https" {
+  access                      = "Allow"
+  destination_address_prefix  = "*"
+  destination_port_range      = "443"
+  direction                   = "Inbound"
+  name                        = "HTTPS"
+  network_security_group_name = var.nsg_name
+  priority                    = 2048
+  protocol                    = "Tcp"
+  resource_group_name         = var.resource_group.name
+  source_port_range           = "*"
+
+  source_address_prefixes = var.azure_firewall_subnet_cidrs
 }

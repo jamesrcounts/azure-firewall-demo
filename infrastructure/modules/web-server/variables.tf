@@ -3,6 +3,11 @@ variable "allowed_source_addresses" {
   type        = list(string)
 }
 
+variable "azure_firewall_subnet_cidrs" {
+  description = "(Required) The Azure Firewall subnet CIDR will be used to allow inbound traffic to the server."
+  type        = list(string)
+}
+
 variable "certificate" {
   description = "Private key and public certificate for TLS."
   sensitive   = true
@@ -45,5 +50,10 @@ variable "tags" {
 
 variable "zone_name" {
   description = "(Required) The DNS zone name."
+  type        = string
+}
+
+variable "nsg_name" {
+  description = "(Required) The NSG to add rules to."
   type        = string
 }
