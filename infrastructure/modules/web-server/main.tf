@@ -33,7 +33,8 @@ resource "azurerm_private_dns_a_record" "server" {
 
 resource "azurerm_linux_virtual_machine" "server" {
   depends_on = [
-    azurerm_firewall_policy_rule_collection_group.server_rules
+    azurerm_firewall_policy_rule_collection_group.server_rules,
+    azurerm_network_security_rule.internet_out,
   ]
 
   admin_password                  = "Password1234!"
@@ -66,20 +67,6 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
   firewall_policy_id = var.firewall_policy_id
   name               = "afwp-server-${var.instance_id}"
   priority           = 500
-
-  // network_rule_collection {
-  //   action   = "Allow"
-  //   name     = "AgwToServer"
-  //   priority = 400
-
-  //   rule {
-  //     name                  = "AllowWebServer"
-  //     protocols             = ["TCP", "UDP"]
-  //     source_addresses      = var.allowed_source_addresses
-  //     destination_addresses = [var.subnet.address_prefix]
-  //     destination_ports     = ["443"]
-  //   }
-  // }
 
   // priority 512
   application_rule_collection {
@@ -149,7 +136,28 @@ resource "azurerm_network_security_rule" "https" {
   priority                    = 2048
   protocol                    = "Tcp"
   resource_group_name         = var.resource_group.name
+  source_address_prefixes     = var.azure_firewall_subnet_cidrs
   source_port_range           = "*"
+}
 
-  source_address_prefixes = var.azure_firewall_subnet_cidrs
+# The internet out rule allows the server to contact the ubuntu package repositories
+# for updates and to install nginx.  Although the rule appears wide open to the internet
+# forced tunnelling through the firewall will allow the firewall to restrict egress
+# to specific FQDNs.  However, those packets will not be directly addressed to the firewall
+# so the NSG needs to allow outbound to the internet.  The default deny out rule in the 
+# network module means that the server will not be able to send packets to other parts 
+# of the private network, only the internet, and due to the firewall--only to allowed 
+# destinations. NSGs and Firewall are stateful, so replies still go out fine.
+resource "azurerm_network_security_rule" "internet_out" {
+  access                      = "Allow"
+  destination_address_prefix  = "Internet"
+  destination_port_range      = "*"
+  direction                   = "Outbound"
+  name                        = "internet-out"
+  network_security_group_name = var.nsg_name
+  priority                    = 2048
+  protocol                    = "Tcp"
+  resource_group_name         = var.resource_group.name
+  source_address_prefix       = "*"
+  source_port_range           = "*"
 }
