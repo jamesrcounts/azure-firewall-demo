@@ -5,7 +5,7 @@ resource "azurerm_key_vault_secret" "export" {
     "firewall-policy-id" = module.firewall.firewall_policy_id
     "firewall-public-ip" = module.firewall.public_ip_address
     "subnet"             = jsonencode(module.networks.subnet)
-    "nsg"                = jsonencode(module.networks.nsg)
+    # "nsg"                = jsonencode(module.networks.nsg)
   }
 
   key_vault_id = data.azurerm_key_vault.config.id
