@@ -107,7 +107,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
 
     rule {
       name             = "AllowWebServer"
-      source_addresses = var.allowed_source_addresses
+      source_addresses = concat(var.application_gateway_subnet_cidrs, var.azure_firewall_subnet_cidrs)
       terminate_tls    = true
 
       destination_fqdns = [

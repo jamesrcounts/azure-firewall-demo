@@ -1,5 +1,5 @@
-variable "allowed_source_addresses" {
-  description = "(Required) Specifies a list of source IP addresses (including CIDR and *) that are allowed to communicate with this server."
+variable "application_gateway_subnet_cidrs" {
+  description = "(Required) The Application Gateway subnet CIDR will be used to allow inbound traffic through the firewall."
   type        = list(string)
 }
 

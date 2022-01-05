@@ -87,15 +87,15 @@ resource "azurerm_network_security_group" "web" {
 module "test" {
   source = "../"
 
-  azure_firewall_subnet_cidrs = azurerm_subnet.subnet["AzureFirewallSubnet"].address_prefixes
-  allowed_source_addresses    = [azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefix]
-  firewall_policy_id          = azurerm_firewall_policy.example.id
-  instance_id                 = local.instance_id
-  resource_group              = azurerm_resource_group.test
-  subnet                      = azurerm_subnet.subnet["ServerSubnet"]
-  tags                        = local.tags
-  zone_name                   = azurerm_private_dns_zone.zone.name
-  nsg_name                    = azurerm_network_security_group.web.name
+  application_gateway_subnet_cidrs = azurerm_subnet.subnet["ApplicationGatewaySubnet"].address_prefixes
+  azure_firewall_subnet_cidrs      = azurerm_subnet.subnet["AzureFirewallSubnet"].address_prefixes
+  firewall_policy_id               = azurerm_firewall_policy.example.id
+  instance_id                      = local.instance_id
+  resource_group                   = azurerm_resource_group.test
+  subnet                           = azurerm_subnet.subnet["ServerSubnet"]
+  tags                             = local.tags
+  zone_name                        = azurerm_private_dns_zone.zone.name
+  nsg_name                         = azurerm_network_security_group.web.name
 
   certificate = {
     cert_pem        = tls_self_signed_cert.example.cert_pem
