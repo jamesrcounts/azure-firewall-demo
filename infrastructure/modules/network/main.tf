@@ -76,24 +76,6 @@ resource "azurerm_network_security_group" "web" {
   tags                = var.tags
 }
 
-resource "azurerm_network_security_rule" "https" {
-  access                      = "Allow"
-  destination_address_prefix  = "*"
-  destination_port_range      = "443"
-  direction                   = "Inbound"
-  name                        = "HTTPS"
-  network_security_group_name = azurerm_network_security_group.web.name
-  priority                    = 2048
-  protocol                    = "Tcp"
-  resource_group_name         = var.resource_group.name
-  source_port_range           = "*"
-  
-  source_address_prefixes     = concat(
-    # azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes,
-    azurerm_subnet.hub_subnet["AzureFirewallSubnet"].address_prefixes,
-  )
-}
-
 resource "azurerm_network_security_rule" "default_deny_in" {
   access                      = "Deny"
   destination_address_prefix  = "*"
