@@ -90,20 +90,6 @@ resource "azurerm_network_security_rule" "default_deny_in" {
   source_port_range           = "*"
 }
 
-# resource "azurerm_network_security_rule" "agw_out" {
-#   access                       = "Allow"
-#   destination_address_prefixes = azurerm_subnet.hub_subnet["ApplicationGatewaySubnet"].address_prefixes
-#   destination_port_range       = "*"
-#   direction                    = "Outbound"
-#   name                         = "agw-out"
-#   network_security_group_name  = azurerm_network_security_group.web.name
-#   priority                     = 2049
-#   protocol                     = "Tcp"
-#   resource_group_name          = var.resource_group.name
-#   source_address_prefix        = "*"
-#   source_port_range            = "*"
-# }
-
 resource "azurerm_network_security_rule" "default_deny_out" {
   access                      = "Deny"
   destination_address_prefix  = "VirtualNetwork"
