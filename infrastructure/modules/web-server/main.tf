@@ -111,7 +111,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     }
   }
 
-  # TODO: works, next terminate tls and test whether AGW needs to be an allowed source in firewall/nsg
+  # TODO: works, next test whether AGW needs to be an allowed source in firewall/nsg
   application_rule_collection {
     action   = "Allow"
     name     = "AgwToServer"
@@ -120,8 +120,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "server_rules" {
     rule {
       name             = "AllowWebServer"
       source_addresses = var.allowed_source_addresses
-      terminate_tls    = false
-      # todo make true
+      terminate_tls    = true
 
       destination_fqdns = [
         "firewall.jamesrcounts.com"
